@@ -5,15 +5,34 @@ import (
 )
 
 func TestAntChannelClose(t *testing.T) {
-	channel, err := GetSingleChannelOrFail(t)
-	channel.Close()
+	channel, ctx := GetSingleChannelOrFail(t)
+	defer ctx.Close()
 
-	if err == nil {
-		t.Errorf("close failed with error: %v", err)
-	}
+	channel.Close()
 
 	if channel.device != nil {
 		t.Error("close doesn't cleanup device")
+	}
+}
+
+func TestPair(t *testing.T) {
+	channel, ctx := GetSingleChannelOrFail(t)
+	defer ctx.Close()
+	defer channel.Close()
+
+	channel.Pair()
+}
+
+func TestCommunication(t *testing.T) {
+	channel, ctx := GetSingleChannelOrFail(t)
+	defer ctx.Close()
+	defer channel.Close()
+
+	channel.SendAck()
+	msg := channel.ReceiveMessage()
+
+	if msg == nil {
+		t.Error("messages not created")
 	}
 }
 
