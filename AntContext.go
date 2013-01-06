@@ -52,7 +52,7 @@ func (ctx *AntContext) ListChannels() ([]*AntChannel, error) {
 }
 
 func (ctx *AntContext) Close() {
-	log.Println("closing usb context")
+	//log.Print("closing usb context") <-- CAUSES ERROR :-S
 
 	ctx.usb.Close()
 	ctx.usb = nil

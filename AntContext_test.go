@@ -17,7 +17,7 @@ func TestNewContext(t *testing.T) {
 	}
 }
 
-func TestClose(t *testing.T) {
+func TestAntContextClose(t *testing.T) {
 	ctx := NewContext()
 	ctx.Close()
 
@@ -26,7 +26,7 @@ func TestClose(t *testing.T) {
 	}
 }
 
-func TestListChannels(t *testing.T) {
+func TestAntContextListChannels(t *testing.T) {
 	ctx := NewContext()
 	defer ctx.Close()
 
