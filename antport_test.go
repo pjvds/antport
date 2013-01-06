@@ -2,7 +2,6 @@ package antport
 
 import(
 	"testing"
-	"log"
 )
 
 func TestConnect(t *testing.T) {
