@@ -5,12 +5,11 @@ import(
 	"log"
 )
 
-func TestIsHardware(t *testing.T) {
-	isPresent := IsHardwarePresent()
+func TestConnect(t *testing.T) {
+	ctx := NewContext()
+	connected := Connect(ctx)
 
-	log.Printf("Hardware is present: %s", isPresent)
-
-	if(!isPresent) {
+	if(!connected) {
 		t.Error("Hardware is missing")
 	}
 }
