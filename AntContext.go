@@ -20,7 +20,7 @@ func NewContext() *AntContext {
 	return context
 }
 
-func (ctx *AntContext) ListChannels() ([]*AntChannel, error) {
+func (ctx *AntContext) ListChannels() ([]*AntUsbChannel, error) {
 	devs, err := ctx.usb.ListDevices(func(desc *usb.Descriptor) bool {
 		log.Printf("Found %03d.%03d %s:%s %s\n", desc.Bus, desc.Address, desc.Vendor, desc.Product, usbid.Describe(desc))
 
@@ -67,7 +67,7 @@ func (ctx *AntContext) ListChannels() ([]*AntChannel, error) {
 	}
 
 	nDevices := len(devs)
-	channels := make([]*AntChannel, nDevices)
+	channels := make([]*AntUsbChannel, nDevices)
 	for i := 0; i < len(devs); i++ {
 		usbDevice := devs[i]
 

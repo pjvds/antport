@@ -3,7 +3,6 @@ package antport
 import (
 	"github.com/kylelemons/gousb/usb"
 	"log"
-	"time"
 )
 
 const (
@@ -11,91 +10,72 @@ const (
 	ANT_PRODUCT_ID = 0x1008
 )
 
+type AntChannelReader interface {
+	Read(buffer []byte) (n int, err error)
+}
+
+type AntChannelWriter interface {
+	Write(buffer []byte) (n int, err error)
+}
+
+type AntChannel interface {
+	CreateReader() (reader AntChannelReader, err error)
+}
+
 type AntMessage struct {
 	raw  []byte
 	size int
 }
 
-type AntChannel struct {
-	device      *usb.Device
-	inEndpoint  usb.Endpoint
-	outEndpoint usb.Endpoint
+type AntUsbChannel struct {
+	device *usb.Device
 }
 
-func newAntChannel(usb *usb.Device) *AntChannel {
-	var conf, iface, setup, epoint uint8 = 1, 0, 0, 1
+type AntUsbEndpoint struct {
+	ePoint usb.Endpoint
+}
 
-	log.Println("opening out endpoint")
-	outEpoint, err := usb.OpenEndpoint(conf, iface, setup, epoint)
+func newAntChannel(usb *usb.Device) *AntUsbChannel {
+	return &AntUsbChannel{
+		device: usb,
+	}
+}
+
+func (channel *AntUsbChannel) CreateReader() (reader AntChannelReader, err error) {
+	device := channel.device
+
+	epoint, err := device.OpenEndpoint(1, 0, 0, uint8(1)|uint8(usb.ENDPOINT_DIR_IN))
+
 	if err != nil {
-		log.Fatal("error while opening out endpoint: " + err.Error())
+		return nil, err
 	}
-
-	log.Println("end point created")
-
-	return &AntChannel{
-		device:      usb,
-		outEndpoint: outEpoint,
-		inEndpoint:  nil,
-	}
+	return &AntUsbEndpoint{
+		ePoint: epoint}, nil
 }
 
-func (channel *AntChannel) Pair() {
-	inEndpointOpen := false
+func (channel *AntUsbChannel) CreateWriter() (writer AntChannelWriter, err error) {
+	device := channel.device
 
-	for !inEndpointOpen {
-		channel.SendAck()
-		log.Println("opening in endpoint")
-		inEpoint, err := channel.device.OpenEndpoint(1, 0, 0, 0x81)
-		if err != nil {
-			log.Println("error while opening in endpoint: " + err.Error())
+	epoint, err := device.OpenEndpoint(1, 0, 0, uint8(1)|uint8(usb.ENDPOINT_DIR_OUT))
 
-			time.Sleep(500)
-		} else {
-			inEndpointOpen = true
-			channel.inEndpoint = inEpoint
-		}
+	if err != nil {
+		return nil, err
 	}
+	return &AntUsbEndpoint{
+		ePoint: epoint}, nil
 }
 
-func (channel *AntChannel) Close() {
+func (endPoint AntUsbEndpoint) Write(buffer []byte) (n int, err error) {
+	return endPoint.ePoint.Write(buffer)
+}
+
+func (endPoint AntUsbEndpoint) Read(buffer []byte) (n int, err error) {
+	return endPoint.ePoint.Read(buffer)
+}
+
+func (channel *AntUsbChannel) Close() {
 	log.Printf("closing ant channel %v", channel.device.Descriptor.Product)
 
 	channel.device.Close()
 	channel.device = nil
-}
-
-func (channel *AntChannel) SendAck() {
-	buffer := []byte{0x44, 0x02, 0x07, 0x04, 0x00, 0x00, 0x00, 0x00}
-	channel.write(buffer)
-}
-
-func (channel *AntChannel) write(content []byte) {
-	log.Println("starting to send")
-	bytesWritten, err := channel.outEndpoint.Write(content)
-
-	if bytesWritten == 0 {
-		log.Fatal("nothing send!")
-	} else {
-		log.Printf("%v bytes send\n", bytesWritten)
-	}
-
-	if err != nil {
-		log.Fatal("error while sending to channel endpoint: " + err.Error())
-	}
-}
-
-func (channel *AntChannel) ReceiveMessage() *AntMessage {
-	var buffer = make([]byte, 255)
-
-	bytesRead, err := channel.inEndpoint.Read(buffer)
-
-	if err != nil {
-		log.Fatal("error while reading from channel endpoint: " + err.Error())
-	}
-
-	return &AntMessage{
-		raw:  buffer,
-		size: bytesRead,
-	}
 }
