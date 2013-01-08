@@ -10,16 +10,16 @@ const (
 	ANT_PRODUCT_ID = 0x1008
 )
 
-type AntChannelReader interface {
+type AntUsbReader interface {
 	Read(buffer []byte) (n int, err error)
 }
 
-type AntChannelWriter interface {
+type AntUsbWriter interface {
 	Write(buffer []byte) (n int, err error)
 }
 
 type AntChannel interface {
-	CreateReader() (reader AntChannelReader, err error)
+	CreateReader() (reader AntUsbReader, err error)
 }
 
 type AntMessage struct {
@@ -27,7 +27,7 @@ type AntMessage struct {
 	size int
 }
 
-type AntUsbChannel struct {
+type AntUsbDevice struct {
 	device *usb.Device
 }
 
@@ -35,13 +35,13 @@ type AntUsbEndpoint struct {
 	ePoint usb.Endpoint
 }
 
-func newAntChannel(usb *usb.Device) *AntUsbChannel {
-	return &AntUsbChannel{
+func newAntUsbDevice(usb *usb.Device) *AntUsbDevice {
+	return &AntUsbDevice{
 		device: usb,
 	}
 }
 
-func (channel *AntUsbChannel) CreateReader() (reader AntChannelReader, err error) {
+func (channel *AntUsbDevice) CreateReader() (reader AntUsbReader, err error) {
 	device := channel.device
 
 	epoint, err := device.OpenEndpoint(1, 0, 0, uint8(1)|uint8(usb.ENDPOINT_DIR_IN))
@@ -53,7 +53,7 @@ func (channel *AntUsbChannel) CreateReader() (reader AntChannelReader, err error
 		ePoint: epoint}, nil
 }
 
-func (channel *AntUsbChannel) CreateWriter() (writer AntChannelWriter, err error) {
+func (channel *AntUsbDevice) CreateWriter() (writer AntUsbWriter, err error) {
 	device := channel.device
 
 	epoint, err := device.OpenEndpoint(1, 0, 0, uint8(1)|uint8(usb.ENDPOINT_DIR_OUT))
@@ -73,7 +73,7 @@ func (endPoint AntUsbEndpoint) Read(buffer []byte) (n int, err error) {
 	return endPoint.ePoint.Read(buffer)
 }
 
-func (channel *AntUsbChannel) Close() {
+func (channel *AntUsbDevice) Close() {
 	log.Printf("closing ant channel %v", channel.device.Descriptor.Product)
 
 	channel.device.Close()

@@ -88,10 +88,10 @@ func TestWaitForBecon(t *testing.T) {
 // 	}
 // }
 
-func GetSingleChannelOrFail(t *testing.T) (*AntUsbChannel, *AntContext) {
+func GetSingleChannelOrFail(t *testing.T) (*AntUsbDevice, *AntContext) {
 	ctx := NewContext()
 
-	channels, err := ctx.ListChannels()
+	channels, err := ctx.ListAntUsbDevices()
 
 	if err != nil {
 		t.Errorf("ListChannels failed with error: %v", err)
