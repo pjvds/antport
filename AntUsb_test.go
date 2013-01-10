@@ -52,7 +52,6 @@ func TestWaitForBecon(t *testing.T) {
 
 	log.Println("creating reader...")
 	reader, err := channel.CreateReader()
-
 	for err != nil {
 		log.Printf("read was not created: %s", err)
 		time.Sleep(10000)
@@ -60,19 +59,28 @@ func TestWaitForBecon(t *testing.T) {
 		reader, err = channel.CreateReader()
 	}
 
-	log.Println("reader created!!!")
-	log.Println("reading...")
-
-	buffer := make([]byte, 8)
-	read, err := reader.Read(buffer)
-	for read == 0 {
-		log.Printf("no bytes read: %s", err)
+	log.Println("creating writer...")
+	writer, err := channel.CreateWriter()
+	for err != nil {
+		log.Printf("writer was not created: %s", err)
 		time.Sleep(10000)
 
-		read, err = reader.Read(buffer)
+		reader, err = channel.CreateReader()
 	}
 
-	log.Printf("bytes read!!!: %v\n", string(buffer[0:read]))
+	capabilitiesCommand := CreateCapabilitiesCommand()
+	SendCommand(writer, capabilitiesCommand)
+
+	for {
+		buffer := make([]byte, 8)
+		bytesRead, err := reader.Read(buffer)
+
+		if bytesRead > 0 {
+			log.Printf("%v bytes read:  %s\n", bytesRead, string(buffer[0:bytesRead]))
+		} else {
+			log.Printf("no bytes read: %v", err.Error())
+		}
+	}
 }
 
 // func TestCommunication(t *testing.T) {
