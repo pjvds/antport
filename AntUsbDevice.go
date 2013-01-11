@@ -17,10 +17,12 @@ func newAntUsbDevice(usb *usb.Device) *AntUsbDevice {
 
 func (channel *AntUsbDevice) CreateReader() (reader AntUsbReader, err error) {
 	device := channel.device
+	log.Printf("opening endpoint for reading")
 
 	epoint, err := device.OpenEndpoint(1, 0, 0, uint8(1)|uint8(usb.ENDPOINT_DIR_IN))
 
 	if err != nil {
+		log.Printf("opening failed: " + err.Error())
 		return nil, err
 	}
 	return &AntUsbEndpoint{
@@ -30,9 +32,12 @@ func (channel *AntUsbDevice) CreateReader() (reader AntUsbReader, err error) {
 func (channel *AntUsbDevice) CreateWriter() (writer AntUsbWriter, err error) {
 	device := channel.device
 
+	log.Printf("opening endpoint for writing")
+
 	epoint, err := device.OpenEndpoint(1, 0, 0, uint8(1)|uint8(usb.ENDPOINT_DIR_OUT))
 
 	if err != nil {
+		log.Printf("opening failed: " + err.Error())
 		return nil, err
 	}
 	return &AntUsbEndpoint{
