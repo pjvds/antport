@@ -6,7 +6,9 @@ import (
 )
 
 type AntUsbDevice struct {
-	usbDevice *usb.Device
+	usbDevice   *usb.Device
+	inEndpoint  usb.Endpoint
+	outEndpoint usb.Endpoint
 }
 
 type AntDevice interface {
@@ -15,20 +17,28 @@ type AntDevice interface {
 }
 
 func newAntUsbDevice(usbDevice *usb.Device) *AntUsbDevice {
+	inEndpoint, err := usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_IN))
+
+	if err != nil {
+		log.Println("error opening endpoint: " + err.Error())
+	}
+
+	outEndpoint, err := usbDevice.OpenEndpointNoCheck(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_OUT))
+
+	if err != nil {
+		log.Println("error opening endpoint: " + err.Error())
+	}
+
 	return &AntUsbDevice{
-		usbDevice: usbDevice,
+		usbDevice:   usbDevice,
+		inEndpoint:  inEndpoint,
+		outEndpoint: outEndpoint,
 	}
 }
 
 func (device *AntUsbDevice) Read(buffer []byte) (int, error) {
-	ep, err := device.usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_IN))
-
-	if err != nil {
-		log.Println("error while opening end point for reading: " + err.Error())
-		return 0, err
-	}
-
-	n, err := ep.Read(buffer)
+	epoint := device.inEndpoint
+	n, err := epoint.Read(buffer)
 
 	if err != nil {
 		log.Println("error while reading from device: " + err.Error())
@@ -40,17 +50,8 @@ func (device *AntUsbDevice) Read(buffer []byte) (int, error) {
 }
 
 func (device *AntUsbDevice) Write(data []byte) (int, error) {
-	log.Printf("writing %v bytes to device", len(data))
-
-	log.Println("opening end point for writing")
-	ep, err := device.usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_OUT))
-
-	if err != nil {
-		log.Println("error while opening end point for write: " + err.Error())
-		return 0, err
-	}
-
-	n, err := ep.Write(data)
+	epoint := device.outEndpoint
+	n, err := epoint.Write(data)
 
 	if err != nil {
 		log.Println("error while writing to device: " + err.Error())
