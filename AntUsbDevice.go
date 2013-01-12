@@ -7,6 +7,8 @@ import (
 
 type AntUsbDevice struct {
 	device *usb.Device
+	Reader AntUsbReader
+	Writer AntUsbWriter
 }
 
 func newAntUsbDevice(usb *usb.Device) *AntUsbDevice {
