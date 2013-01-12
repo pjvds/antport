@@ -10,7 +10,8 @@ func TestOpenContext(t *testing.T) {
 	defer device.Close()
 
 	ctx := CreateAntContext(device)
-	ctx.ResetSystem()
+	ctx.Init()
+	ctx.HardResetSystem()
 }
 
 func GetSingleChannelOrFail(t *testing.T) (*AntUsbDevice, *AntUsbContext) {

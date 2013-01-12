@@ -17,6 +17,8 @@ type AntContext struct {
 }
 
 type AntCapabilityInfo struct {
+	MaxChannels byte
+	MaxNetworks byte
 }
 
 func CreateAntContext(device AntDevice) *AntContext {
@@ -28,14 +30,41 @@ func CreateAntContext(device AntDevice) *AntContext {
 
 func (ctx *AntContext) Init() {
 	ctx.ResetSystem()
+	ctx.initCapabilities()
 }
 
 func (ctx *AntContext) ResetSystem() {
 	ctx.SendCommand(CreateResetCommand())
 	ctx.ReceiveReply()
+}
 
+func (ctx *AntContext) HardResetSystem() {
+	log.Println("hard resetting device system")
+	data := make([]byte, 15)
+	n, err := ctx.device.Write(data)
+
+	for n != 15 || err != nil {
+		log.Println("hard reset failed.")
+		n, err = ctx.device.Write(data)
+	}
+
+	log.Println("hard reset ok")
+}
+
+func (ctx *AntContext) initCapabilities() {
 	ctx.SendCommand(CreateRequestMessageCommand(0, 0x54))
-	ctx.ReceiveReply()
+	reply, err := ctx.ReceiveReply()
+
+	if err != nil {
+		log.Println("error while requesting capabilities: " + err.Error())
+	}
+
+	ctx.Capabilities = &AntCapabilityInfo{
+		MaxChannels: reply.Data[0],
+		MaxNetworks: reply.Data[1],
+	}
+
+	log.Printf("context capabilities initialized: %s", ctx.Capabilities)
 }
 
 func (ctx *AntContext) SendCommand(cmd *AntCommand) {
