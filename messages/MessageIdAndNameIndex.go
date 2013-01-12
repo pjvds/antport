@@ -6,10 +6,11 @@ import (
 
 var (
 	KnownMessageNames = map[byte]string{
-		RequestMessageCommandId: RequestMessageCommandName,
-		ResetSystemCommandId:    ResetSystemCommandName,
-		SetChannelIdCommandId:   SetChannelIdCommandName,
-		CapabilitiesCommandId:   CapabilitiesCommandName,
+		RequestMessageCommandId:   RequestMessageCommandName,
+		ResetSystemCommandId:      ResetSystemCommandName,
+		SetChannelIdCommandId:     SetChannelIdCommandName,
+		CapabilitiesCommandId:     CapabilitiesCommandName,
+		SetChannelPeriodCommandId: SetChannelPeriodCommandName,
 	}
 )
 
