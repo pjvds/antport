@@ -1,7 +1,7 @@
 package antport
 
 import (
-	"log"
+	//"log"
 	"testing"
 	//"time"
 )
@@ -45,52 +45,52 @@ import (
 // 	log.Println("bytes written!!!")
 // }
 
-func TestWaitForBecon(t *testing.T) {
-	channel, ctx := GetSingleChannelOrFail(t)
-	defer ctx.Close()
-	defer channel.Close()
+// func TestWaitForBecon(t *testing.T) {
+// 	channel, ctx := GetSingleChannelOrFail(t)
+// 	defer ctx.Close()
+// 	defer channel.Close()
 
-	log.Println("creating writer...")
-	writer, err := channel.CreateWriter()
-	if err != nil {
-		log.Printf("writer was not created: %s", err)
-		// 	time.Sleep(10000)
+// 	log.Println("creating writer...")
+// 	writer, err := channel.CreateWriter()
+// 	if err != nil {
+// 		log.Printf("writer was not created: %s", err)
+// 		// 	time.Sleep(10000)
 
-		// 	writer, err = channel.CreateWriter()
-	}
+// 		// 	writer, err = channel.CreateWriter()
+// 	}
 
-	log.Println("Sending Capabilities command")
+// 	log.Println("Sending Capabilities command")
 
-	capabilitiesCommand := CreateCapabilitiesCommand()
-	SendCommand(writer, capabilitiesCommand)
+// 	capabilitiesCommand := CreateCapabilitiesCommand()
+// 	SendCommand(writer, capabilitiesCommand)
 
-	reader, err := channel.CreateReader()
-	if err != nil {
-		log.Println("reader was not created: %s", err)
-	}
+// 	reader, err := channel.CreateReader()
+// 	if err != nil {
+// 		log.Println("reader was not created: %s", err)
+// 	}
 
-	buffer := make([]byte, 8)
-	bytesRead, err := reader.Read(buffer)
+// 	buffer := make([]byte, 8)
+// 	bytesRead, err := reader.Read(buffer)
 
-	if err != nil {
-		log.Println("couldn't read: %s", err)
-	}
+// 	if err != nil {
+// 		log.Println("couldn't read: %s", err)
+// 	}
 
-	log.Printf("%v bytes read", bytesRead)
+// 	log.Printf("%v bytes read", bytesRead)
 
-	log.Println("bye...")
+// 	log.Println("bye...")
 
-	// for {
-	// 	buffer := make([]byte, 8)
-	// 	bytesRead, err := reader.Read(buffer)
+// 	// for {
+// 	// 	buffer := make([]byte, 8)
+// 	// 	bytesRead, err := reader.Read(buffer)
 
-	// 	if bytesRead > 0 {
-	// 		log.Printf("%v bytes read:  %s\n", bytesRead, string(buffer[0:bytesRead]))
-	// 	} else {
-	// 		log.Printf("no bytes read: %v", err.Error())
-	// 	}
-	// }
-}
+// 	// 	if bytesRead > 0 {
+// 	// 		log.Printf("%v bytes read:  %s\n", bytesRead, string(buffer[0:bytesRead]))
+// 	// 	} else {
+// 	// 		log.Printf("no bytes read: %v", err.Error())
+// 	// 	}
+// 	// }
+// }
 
 // func TestCommunication(t *testing.T) {
 // 	channel, ctx := GetSingleChannelOrFail(t)
