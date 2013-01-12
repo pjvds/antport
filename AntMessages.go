@@ -40,7 +40,7 @@ func CreateRequestMessageCommand(channel byte, messageId byte) *AntCommand {
 	return newMessage(DIR_OUT, 0x4d, "REQUEST_MESSAGE", data)
 }
 
-func CreateSetChannelIdCommand(channelNumber byte, deviceNumber byte, deviceTypeId byte, transType byte) {
+func CreateSetChannelIdCommand(channelNumber byte, deviceNumber byte, deviceTypeId byte, transType byte) *AntCommand {
 	data := []byte{
 		channelNumber,
 		deviceNumber,

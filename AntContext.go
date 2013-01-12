@@ -18,21 +18,8 @@ type AntContext struct {
 	Networks     []*AntNetwork
 }
 
-/* ANT channel consists of one or more transmitting 
-   nodes and one or more receiving nodes depending on 
-   the network topology. Any node can transmit or 
-   receive so the channels are bi-directional. */
-type AntChannel struct {
-	ant *AntContext
-
-	// The channel number range acceptable values being
-	// from 0 to the maximum number defined by the ANT 
-	// implementation.
-	number byte
-}
-
 type AntNetwork struct {
-	Ant *AntContext
+	ant *AntContext
 
 	// The Network Number is an 8-bit field with the 
 	// range of acceptable values being from 0 to the 
@@ -101,6 +88,7 @@ func (ctx *AntContext) initCapabilities() {
 		MaxNetworks: reply.Data[1],
 	}
 
+	// Create channels
 	channels := make([]*AntChannel, ctx.Capabilities.MaxChannels)
 	for i := 0; i < len(channels); i++ {
 		channels[i] = &AntChannel{
@@ -110,15 +98,17 @@ func (ctx *AntContext) initCapabilities() {
 	}
 	ctx.Channels = channels
 
+	// Create networks
 	networks := make([]*AntNetwork, ctx.Capabilities.MaxNetworks)
 	for i := 0; i < len(networks); i++ {
+		var key [8]byte
 		networks[i] = &AntNetwork{
 			ant:    ctx,
 			number: byte(i),
-			key:    make([]byte, 0),
+			key:    key,
 		}
 	}
-	ctx.networks = networks
+	ctx.Networks = networks
 
 	log.Printf("context capabilities initialized: %s", ctx.Capabilities)
 }
