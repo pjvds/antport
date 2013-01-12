@@ -9,6 +9,7 @@ var (
 		RequestMessageCommandId: RequestMessageCommandName,
 		ResetSystemCommandId:    ResetSystemCommandName,
 		SetChannelIdCommandId:   SetChannelIdCommandName,
+		CapabilitiesCommandId:   CapabilitiesCommandName,
 	}
 )
 

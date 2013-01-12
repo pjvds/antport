@@ -76,15 +76,21 @@ func (ctx *AntContext) HardResetSystem() {
 func (ctx *AntContext) initCapabilities() {
 	cmd := messages.CreateRequestMessageCommand(0, 0x54)
 	ctx.SendCommand(cmd)
-	reply, err := ctx.ReceiveReply()
+	replyMsg, err := ctx.ReceiveReply()
 
 	if err != nil {
 		log.Println("error while requesting capabilities: " + err.Error())
 	}
 
+	reply, err := messages.NewCapabilitiesReply(replyMsg)
+
+	if err != nil {
+		log.Println("error while creating reply: " + err.Error())
+	}
+
 	ctx.Capabilities = &AntCapabilityInfo{
-		MaxChannels: reply.Data[0],
-		MaxNetworks: reply.Data[1],
+		MaxChannels: reply.MaxChannels,
+		MaxNetworks: reply.MaxNetworks,
 	}
 
 	// Create channels
@@ -147,7 +153,7 @@ func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err er
 
 	log.Printf("ANT message name: %v", name)
 	log.Printf("ANT message length: %v", size)
-	log.Printf("%x", buffer[0:n])
+	log.Printf("ANT message raw: %x", buffer[0:n])
 	if size > 0 {
 		data = buffer[3:size]
 	}
