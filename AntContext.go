@@ -5,6 +5,17 @@ import (
 	"log"
 )
 
+var (
+	SEARCH_NETWORK_KEY = [8]byte{0xa8,
+		0xa4,
+		0x23,
+		0xb9,
+		0xf5,
+		0x5e,
+		0x63, 0xc1,
+	}
+)
+
 type AntContext struct {
 	device       AntDevice
 	Initialized  bool
@@ -39,7 +50,7 @@ type AntCapabilityInfo struct {
 func CreateAntContext(device AntDevice) *AntContext {
 	return &AntContext{
 		device:   device,
-		MaxRetry: 5,
+		MaxRetry: 50,
 	}
 }
 
@@ -139,7 +150,6 @@ func (ctx *AntContext) SendCommand(cmd messages.AntCommand) (ok bool, err error)
 		return false, err
 	}
 
-	log.Printf("%v bytes written to device", n)
 	log.Printf("ANT message name: %v", msg.Name)
 	return true, nil
 }
@@ -164,7 +174,6 @@ func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err er
 		return nil, err
 	}
 
-	log.Printf("%v bytes read from device", n)
 	data := make([]byte, 0)
 	name := messages.CommandIdToName(buffer[2])
 	size := buffer[1]

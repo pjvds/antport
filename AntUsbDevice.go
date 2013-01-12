@@ -30,8 +30,8 @@ func newAntUsbDevice(usbDevice *usb.Device) *AntUsbDevice {
 		log.Println("error opening endpoint: " + err.Error())
 	}
 
-	usbDevice.WriteTimeout = time.Second
-	usbDevice.ReadTimeout = time.Second
+	usbDevice.WriteTimeout = time.Second * 2
+	usbDevice.ReadTimeout = time.Second * 2
 
 	return &AntUsbDevice{
 		usbDevice:   usbDevice,

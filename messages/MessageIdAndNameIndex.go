@@ -11,6 +11,7 @@ var (
 		SetChannelIdCommandId:     SetChannelIdCommandName,
 		CapabilitiesCommandId:     CapabilitiesCommandName,
 		SetChannelPeriodCommandId: SetChannelPeriodCommandName,
+		SetNetworkKeyCommandId:    SetNetworkKeyCommandName,
 	}
 )
 
