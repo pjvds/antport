@@ -118,12 +118,30 @@ func (ctx *AntContext) initCapabilities() {
 	log.Printf("context capabilities initialized: %s", ctx.Capabilities)
 }
 
-func (ctx *AntContext) SendCommand(cmd messages.AntCommand) {
-	log.Printf("sending command %v", cmd.Name())
+func (ctx *AntContext) SendCommand(cmd messages.AntCommand) (ok bool, err error) {
+	log.Printf("sending command: %v", cmd.Name())
 
 	msg := messages.NewMessage(cmd)
 	data := msg.Pack()
-	ctx.device.Write(data)
+	n, err := ctx.device.Write(data)
+
+	for retries := 1; retries < ctx.MaxRetry+1; retries++ {
+		if err != nil {
+			log.Println("error while writing to device: " + err.Error())
+			log.Printf("will retry (%v/%v)", retries, ctx.MaxRetry)
+
+			n, err = ctx.device.Write(data)
+		}
+	}
+
+	if err != nil {
+		log.Println("error while writing to device: " + err.Error())
+		return false, err
+	}
+
+	log.Printf("%v bytes written to device", n)
+	log.Printf("ANT message name: %v", msg.Name)
+	return true, nil
 }
 
 func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
@@ -132,7 +150,7 @@ func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err er
 	buffer := make([]byte, 8)
 	n, err := ctx.device.Read(buffer)
 
-	for retries := 1; retries < ctx.MaxRetry; retries++ {
+	for retries := 1; retries < ctx.MaxRetry+1; retries++ {
 		if err != nil {
 			log.Println("error while receiving reply: " + err.Error())
 			log.Printf("will retry (%v/%v)", retries, ctx.MaxRetry)

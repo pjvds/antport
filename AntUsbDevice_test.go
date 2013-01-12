@@ -1,6 +1,7 @@
 package antport
 
 import (
+	"log"
 	"testing"
 )
 
@@ -12,6 +13,13 @@ func TestOpenContext(t *testing.T) {
 	ctx := CreateAntContext(device)
 	ctx.HardResetSystem()
 	ctx.Init()
+
+	fs := NewAntFsContext(ctx)
+	fs.OpenAntsFsSearchChannel()
+
+	reply, err := ctx.ReceiveReply()
+	log.Printf("Reply: %s", reply)
+	log.Printf("error: %s", err)
 }
 
 func GetSingleChannelOrFail(t *testing.T) (*AntUsbDevice, *AntUsbContext) {

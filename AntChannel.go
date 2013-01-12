@@ -17,6 +17,14 @@ type AntChannel struct {
 	number byte
 }
 
+func (channel AntChannel) Assign(channelType, networkNumber byte) {
+	ant := channel.ant
+	cmd := messages.CreateAssignChannelCommand(channel.number, channelType, networkNumber)
+
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
+}
+
 func (channel AntChannel) SetId(deviceNumber int, networkNumber byte, transType byte) {
 	ant := channel.ant
 	cmd := messages.CreateSetChannelIdCommand(channel.number, deviceNumber,
