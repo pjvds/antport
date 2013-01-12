@@ -29,30 +29,30 @@ func (ctx *AntContext) ListAntUsbDevices() ([]*AntUsbDevice, error) {
 
 		// We are looking for the specific vendor and device
 		if desc.Vendor == ANT_VENDOR_ID && desc.Product == ANT_PRODUCT_ID {
-			// log.Println("This is an ANT device")
+			log.Println("This is an ANT device")
 
-			// // The configurations can be examined from the Descriptor, though they can only
-			// // be set once the device is opened.  All configuration references must be closed,
-			// // to free up the memory in libusb.
-			// for _, cfg := range desc.Configs {
-			// 	// This loop just uses more of the built-in and usbid pretty printing to list
-			// 	// the USB devices.
-			// 	log.Printf("  %s:\n", cfg)
-			// 	for _, alt := range cfg.Interfaces {
-			// 		log.Printf("    --------------\n")
-			// 		for _, iface := range alt.Setups {
-			// 			log.Printf("(iface)    %s\n", iface)
-			// 			log.Printf("(classify)      %s\n", usbid.Classify(iface))
-			// 			for _, end := range iface.Endpoints {
-			// 				log.Printf("(end)      %s\n", end)
-			// 				log.Printf("	number: %s\n", end.Number())
-			// 				log.Printf("	address: %s\n", end.Address)
-			// 				log.Printf("	sync: %s\n", end.SynchAddress)
-			// 			}
-			// 		}
-			// 	}
-			// 	log.Printf("    --------------\n")
-			// }
+			// The configurations can be examined from the Descriptor, though they can only
+			// be set once the device is opened.  All configuration references must be closed,
+			// to free up the memory in libusb.
+			for _, cfg := range desc.Configs {
+				// This loop just uses more of the built-in and usbid pretty printing to list
+				// the USB devices.
+				log.Printf("  %s:\n", cfg)
+				for _, alt := range cfg.Interfaces {
+					log.Printf("    --------------\n")
+					for _, iface := range alt.Setups {
+						log.Printf("(iface)    %s\n", iface)
+						log.Printf("(classify)      %s\n", usbid.Classify(iface))
+						for _, end := range iface.Endpoints {
+							log.Printf("(end)      %s\n", end)
+							log.Printf("	number: %s\n", end.Number())
+							log.Printf("	address: %s\n", end.Address)
+							log.Printf("	sync: %s\n", end.SynchAddress)
+						}
+					}
+				}
+				log.Printf("    --------------\n")
+			}
 
 			return true
 		}

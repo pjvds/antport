@@ -3,7 +3,7 @@ package antport
 import (
 	"log"
 	"testing"
-	"time"
+	//"time"
 )
 
 // func TestAntChannelClose(t *testing.T) {
@@ -50,37 +50,46 @@ func TestWaitForBecon(t *testing.T) {
 	defer ctx.Close()
 	defer channel.Close()
 
-	log.Println("creating reader...")
-	reader, err := channel.CreateReader()
-	for err != nil {
-		log.Printf("read was not created: %s", err)
-		time.Sleep(10000)
-
-		reader, err = channel.CreateReader()
-	}
-
 	log.Println("creating writer...")
 	writer, err := channel.CreateWriter()
-	for err != nil {
+	if err != nil {
 		log.Printf("writer was not created: %s", err)
-		time.Sleep(10000)
+		// 	time.Sleep(10000)
 
-		reader, err = channel.CreateReader()
+		// 	writer, err = channel.CreateWriter()
 	}
+
+	log.Println("Sending Capabilities command")
 
 	capabilitiesCommand := CreateCapabilitiesCommand()
 	SendCommand(writer, capabilitiesCommand)
 
-	for {
-		buffer := make([]byte, 8)
-		bytesRead, err := reader.Read(buffer)
-
-		if bytesRead > 0 {
-			log.Printf("%v bytes read:  %s\n", bytesRead, string(buffer[0:bytesRead]))
-		} else {
-			log.Printf("no bytes read: %v", err.Error())
-		}
+	reader, err := channel.CreateReader()
+	if err != nil {
+		log.Println("reader was not created: %s", err)
 	}
+
+	buffer := make([]byte, 8)
+	bytesRead, err := reader.Read(buffer)
+
+	if err != nil {
+		log.Println("couldn't read: %s", err)
+	}
+
+	log.Printf("%v bytes read", bytesRead)
+
+	log.Println("bye...")
+
+	// for {
+	// 	buffer := make([]byte, 8)
+	// 	bytesRead, err := reader.Read(buffer)
+
+	// 	if bytesRead > 0 {
+	// 		log.Printf("%v bytes read:  %s\n", bytesRead, string(buffer[0:bytesRead]))
+	// 	} else {
+	// 		log.Printf("no bytes read: %v", err.Error())
+	// 	}
+	// }
 }
 
 // func TestCommunication(t *testing.T) {

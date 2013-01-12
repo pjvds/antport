@@ -1,8 +1,6 @@
 package antport
 
-import (
-	"github.com/kylelemons/gousb/usb"
-)
+import ()
 
 const (
 	ANT_VENDOR_ID  = 0xfcf
@@ -21,10 +19,6 @@ const (
 	MESG_SYSTEM_RESET_ID   = byte(0x4A)
 	MESG_SYSTEM_RESET_SIZE = byte(1)
 )
-
-type AntUsbEndpoint struct {
-	ePoint usb.Endpoint
-}
 
 type AntCommand struct {
 	SYNC byte
@@ -54,17 +48,8 @@ func (command *AntCommand) Pack() []byte {
 	}
 
 	// Set checksum
-	data[overheadSize+dataSize] = GenerateChecksum(data)
+	data[len(data)-1] = GenerateChecksum(data)
 	return data
-}
-
-func GenerateChecksum(data []byte) byte {
-	checksum := byte(0)
-	for i := 0; i < len(data)-1; i++ {
-		checksum = checksum ^ data[i]
-	}
-
-	return checksum
 }
 
 func CreateCapabilitiesCommand() *AntCommand {
@@ -85,12 +70,4 @@ func newAntMessage(id byte, name string) *AntCommand {
 		ID:   id,
 		NAME: name,
 	}
-}
-
-func (endPoint AntUsbEndpoint) Write(buffer []byte) (n int, err error) {
-	return endPoint.ePoint.Write(buffer)
-}
-
-func (endPoint AntUsbEndpoint) Read(buffer []byte) (n int, err error) {
-	return endPoint.ePoint.Read(buffer)
 }
