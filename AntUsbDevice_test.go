@@ -9,13 +9,8 @@ func TestOpenContext(t *testing.T) {
 	defer antContext.Close()
 	defer device.Close()
 
-	resetCommand := CreateResetCommand()
-	device.Write(resetCommand.Pack())
-	device.Read(make([]byte, 8))
-
-	capCommand := CreateCapabilitiesCommand()
-	device.Write(capCommand.Pack())
-	device.Read(make([]byte, 8))
+	ctx := CreateAntContext(device)
+	ctx.ResetSystem()
 }
 
 func GetSingleChannelOrFail(t *testing.T) (*AntUsbDevice, *AntUsbContext) {

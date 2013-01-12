@@ -3,6 +3,7 @@ package antport
 import (
 	"github.com/kylelemons/gousb/usb"
 	"log"
+	"time"
 )
 
 type AntUsbDevice struct {
@@ -13,7 +14,7 @@ type AntUsbDevice struct {
 
 type AntDevice interface {
 	Read(buffer []byte) (n int, err error)
-	Writer(data []byte) (n int, err error)
+	Write(data []byte) (n int, err error)
 }
 
 func newAntUsbDevice(usbDevice *usb.Device) *AntUsbDevice {
@@ -28,6 +29,9 @@ func newAntUsbDevice(usbDevice *usb.Device) *AntUsbDevice {
 	if err != nil {
 		log.Println("error opening endpoint: " + err.Error())
 	}
+
+	usbDevice.WriteTimeout = time.Second
+	usbDevice.ReadTimeout = time.Second
 
 	return &AntUsbDevice{
 		usbDevice:   usbDevice,

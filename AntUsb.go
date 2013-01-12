@@ -20,54 +20,23 @@ const (
 	MESG_SYSTEM_RESET_SIZE = byte(1)
 )
 
-type AntCommand struct {
-	SYNC byte
-	ID   byte
-	NAME string
-	DATA []byte
-}
-
-func ResetCommand() *AntCommand {
-	return newAntMessage(MESG_SYSTEM_RESET_ID, "RESET_SYSTEM")
-}
-
 func (command *AntCommand) Pack() []byte {
 	overheadSize := MESG_SYNC_SIZE + MESG_SIZE_SIZE + MESG_ID_SIZE + MESG_CHECKSUM_SIZE
-	dataSize := byte(len(command.DATA))
+	dataSize := byte(len(command.Data))
 	dataOffset := byte(3)
 	data := make([]byte, overheadSize+dataSize)
 
 	// Set message values
 	data[0] = command.SYNC
 	data[1] = dataSize
-	data[2] = command.ID
+	data[2] = command.Id
 
 	// Set message data/payload
 	for i := byte(0); i < dataSize; i++ {
-		data[i+dataOffset] = command.DATA[i]
+		data[i+dataOffset] = command.Data[i]
 	}
 
-	// Set checksum
+	// Set checksum at last byte
 	data[len(data)-1] = GenerateChecksum(data)
 	return data
-}
-
-func CreateCapabilitiesCommand() *AntCommand {
-	return newAntMessage(0x54, "CAPABILITIES")
-}
-
-func CreateResetCommand() *AntCommand {
-	return newAntMessage(MESG_SYSTEM_RESET_ID, "SYSTEM_RESET")
-}
-
-func SendCommand(writer AntUsbWriter, command *AntCommand) {
-	data := command.Pack()
-	writer.Write(data)
-}
-
-func newAntMessage(id byte, name string) *AntCommand {
-	return &AntCommand{
-		ID:   id,
-		NAME: name,
-	}
 }

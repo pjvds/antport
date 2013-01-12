@@ -10,7 +10,7 @@ type AntUsbContext struct {
 	usb *usb.Context
 }
 
-func NewUsbContext() *AntContext {
+func NewUsbContext() *AntUsbContext {
 	usbCtx := usb.NewContext()
 
 	context := &AntUsbContext{
@@ -20,7 +20,7 @@ func NewUsbContext() *AntContext {
 	return context
 }
 
-func (ctx *AntContext) ListAntUsbDevices() ([]*AntUsbDevice, error) {
+func (ctx *AntUsbContext) ListAntUsbDevices() ([]*AntUsbDevice, error) {
 	devs, err := ctx.usb.ListDevices(func(desc *usb.Descriptor) bool {
 		log.Printf("Found %03d.%03d %s:%s %s\n", desc.Bus, desc.Address, desc.Vendor, desc.Product, usbid.Describe(desc))
 
@@ -76,7 +76,7 @@ func (ctx *AntContext) ListAntUsbDevices() ([]*AntUsbDevice, error) {
 	return channels, nil
 }
 
-func (ctx *AntContext) Close() {
+func (ctx *AntUsbContext) Close() {
 	// log.Print("closing usb context") // TODO <-- CAUSES ERROR :-S
 
 	ctx.usb.Close()
