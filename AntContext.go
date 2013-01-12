@@ -1,12 +1,8 @@
 package antport
 
 import (
+	"github.com/pjvds/antport/messages"
 	"log"
-)
-
-const (
-	DIR_IN  = "IN"
-	DIR_OUT = "OUT"
 )
 
 type AntContext struct {
@@ -54,7 +50,9 @@ func (ctx *AntContext) Init() {
 
 // Reset system and initialize capabilities
 func (ctx *AntContext) ResetSystem() {
-	ctx.SendCommand(CreateResetCommand())
+	cmd := messages.CreateResetSystemCommand()
+
+	ctx.SendCommand(cmd)
 	ctx.ReceiveReply()
 
 	ctx.initCapabilities()
@@ -76,7 +74,7 @@ func (ctx *AntContext) HardResetSystem() {
 }
 
 func (ctx *AntContext) initCapabilities() {
-	ctx.SendCommand(CreateRequestMessageCommand(0, 0x54))
+	// ctx.SendCommand(CreateRequestMessageCommand(0, 0x54))
 	reply, err := ctx.ReceiveReply()
 
 	if err != nil {
@@ -113,12 +111,12 @@ func (ctx *AntContext) initCapabilities() {
 	log.Printf("context capabilities initialized: %s", ctx.Capabilities)
 }
 
-func (ctx *AntContext) SendCommand(cmd *AntCommand) {
-	data := cmd.Pack()
+func (ctx *AntContext) SendCommand(cmd messages.AntCommand) {
+	data := cmd.Data()
 	ctx.device.Write(data)
 }
 
-func (ctx *AntContext) ReceiveReply() (reply *AntCommand, err error) {
+func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
 	buffer := make([]byte, 8)
 	n, err := ctx.device.Read(buffer)
 
@@ -131,19 +129,9 @@ func (ctx *AntContext) ReceiveReply() (reply *AntCommand, err error) {
 		}
 	}
 
-	if err != nil {
+	if err != nil || n <= 0 {
 		return nil, err
 	}
-
-	return newMessage(DIR_IN, 0x00, "RAWCOMMAND", buffer[0:n]), nil
-}
-
-// Creates a new AntCommand message
-func newMessage(direction string, id byte, name string, data []byte) *AntCommand {
-	return &AntCommand{
-		Direction: direction,
-		Id:        id,
-		Name:      name,
-		Data:      data,
-	}
+	return nil, nil
+	//return messages.AntCommandMessage{}
 }
