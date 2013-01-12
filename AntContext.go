@@ -14,6 +14,38 @@ type AntContext struct {
 	Initialized  bool
 	Capabilities *AntCapabilityInfo
 	MaxRetry     int
+	Channels     []*AntChannel
+	Networks     []*AntNetwork
+}
+
+/* ANT channel consists of one or more transmitting 
+   nodes and one or more receiving nodes depending on 
+   the network topology. Any node can transmit or 
+   receive so the channels are bi-directional. */
+type AntChannel struct {
+	ant *AntContext
+
+	// The channel number range acceptable values being
+	// from 0 to the maximum number defined by the ANT 
+	// implementation.
+	number byte
+}
+
+type AntNetwork struct {
+	Ant *AntContext
+
+	// The Network Number is an 8-bit field with the 
+	// range of acceptable values being from 0 to the 
+	// maximum number defined by the ANT implementation.
+	number byte
+
+	// The Network Key is an 8-byte field which is configurable
+	// by the host application. A particular Network
+	// Number will have a corresponding Network Key.  
+	// The Network Number and the Network Key together provide 
+	// the ability to deploy a network with varied levels of 
+	// access control and security options. 
+	key [8]byte
 }
 
 type AntCapabilityInfo struct {
@@ -28,16 +60,21 @@ func CreateAntContext(device AntDevice) *AntContext {
 	}
 }
 
+// Initialize the context
 func (ctx *AntContext) Init() {
 	ctx.ResetSystem()
-	ctx.initCapabilities()
 }
 
+// Reset system and initialize capabilities
 func (ctx *AntContext) ResetSystem() {
 	ctx.SendCommand(CreateResetCommand())
 	ctx.ReceiveReply()
+
+	ctx.initCapabilities()
 }
 
+// A hard reset can be preformed on ANT hardware by
+// sending 15 zero's. This method will retry until succeeds.
 func (ctx *AntContext) HardResetSystem() {
 	log.Println("hard resetting device system")
 	data := make([]byte, 15)
@@ -63,6 +100,25 @@ func (ctx *AntContext) initCapabilities() {
 		MaxChannels: reply.Data[0],
 		MaxNetworks: reply.Data[1],
 	}
+
+	channels := make([]*AntChannel, ctx.Capabilities.MaxChannels)
+	for i := 0; i < len(channels); i++ {
+		channels[i] = &AntChannel{
+			ant:    ctx,
+			number: byte(i),
+		}
+	}
+	ctx.Channels = channels
+
+	networks := make([]*AntNetwork, ctx.Capabilities.MaxNetworks)
+	for i := 0; i < len(networks); i++ {
+		networks[i] = &AntNetwork{
+			ant:    ctx,
+			number: byte(i),
+			key:    make([]byte, 0),
+		}
+	}
+	ctx.networks = networks
 
 	log.Printf("context capabilities initialized: %s", ctx.Capabilities)
 }

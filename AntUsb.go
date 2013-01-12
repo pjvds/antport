@@ -19,24 +19,3 @@ const (
 	MESG_SYSTEM_RESET_ID   = byte(0x4A)
 	MESG_SYSTEM_RESET_SIZE = byte(1)
 )
-
-func (command *AntCommand) Pack() []byte {
-	overheadSize := MESG_SYNC_SIZE + MESG_SIZE_SIZE + MESG_ID_SIZE + MESG_CHECKSUM_SIZE
-	dataSize := byte(len(command.Data))
-	dataOffset := byte(3)
-	data := make([]byte, overheadSize+dataSize)
-
-	// Set message values
-	data[0] = command.SYNC
-	data[1] = dataSize
-	data[2] = command.Id
-
-	// Set message data/payload
-	for i := byte(0); i < dataSize; i++ {
-		data[i+dataOffset] = command.Data[i]
-	}
-
-	// Set checksum at last byte
-	data[len(data)-1] = GenerateChecksum(data)
-	return data
-}
