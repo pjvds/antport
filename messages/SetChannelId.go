@@ -34,7 +34,7 @@ func CreateSetChannelIdCommand(channelNumber byte, deviceNumber int, deviceTypeI
 	}
 }
 
-func (cmd SetChannelIdCommand) data() []byte {
+func (cmd SetChannelIdCommand) Data() []byte {
 	buffer := new(bytes.Buffer)
 	binary.Write(buffer, binary.LittleEndian, cmd.ChannelNumber)
 	binary.Write(buffer, binary.LittleEndian, cmd.DeviceNumber)

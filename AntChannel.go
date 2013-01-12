@@ -1,5 +1,9 @@
 package antport
 
+import (
+	"github.com/pjvds/antport/messages"
+)
+
 /* ANT channel consists of one or more transmitting 
    nodes and one or more receiving nodes depending on 
    the network topology. Any node can transmit or 
@@ -13,20 +17,19 @@ type AntChannel struct {
 	number byte
 }
 
-// func (channel *AntChannel) SetId(deviceNumber, networkNumber, transType byte) {
-// 	ant := channel.ant
-// 	id := &AntChannelId{
-// 		deviceNumber:  deviceNumber,
-// 		networkNumber: networkNumber,
-// 		transType:     transType,
-// 	}
+func (channel AntChannel) SetId(deviceNumber int, networkNumber byte, transType byte) {
+	ant := channel.ant
+	cmd := messages.CreateSetChannelIdCommand(channel.number, deviceNumber,
+		networkNumber, transType)
 
-// 	ant.SendCommand(CreateSetChannelIdCommand(channel.number, deviceNumber,
-// 		deviceTypeId, transType))
-// }
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
+}
 
-type AntChannelId struct {
-	deviceNumber  byte
-	networkNumber byte
-	transType     byte
+func (channel AntChannel) Open() {
+	ant := channel.ant
+	cmd := messages.CreateOpenChannelCommand(channel.number)
+
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
 }

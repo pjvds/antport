@@ -13,4 +13,6 @@ func NewAntFsContext(ant *AntContext) *AntFsContext {
 
 func (ctx *AntFsContext) OpenAntsFsSearchChannel() {
 	ctx.ant.ResetSystem()
+	ctx.channel = ctx.ant.Channels[0]
+	ctx.channel.SetId(0, 0, 0)
 }
