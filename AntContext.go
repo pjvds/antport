@@ -1,6 +1,7 @@
 package antport
 
 import (
+	"fmt"
 	"github.com/pjvds/antport/messages"
 	"log"
 )
@@ -147,6 +148,11 @@ func (ctx *AntContext) SendCommand(cmd messages.AntCommand) (ok bool, err error)
 
 	if err != nil {
 		log.Println("error while writing to device: " + err.Error())
+		return false, err
+	}
+
+	if n != len(data) {
+		err = fmt.Errorf("number of written bytes (%v) differs from data length (%v)", n, len(data))
 		return false, err
 	}
 
