@@ -3,7 +3,8 @@ package messages
 import ()
 
 const (
-	RequestMessageCommandId = byte(0x4d)
+	RequestMessageCommandId   = byte(0x4d)
+	RequestMessageCommandName = "REQUEST_MESSAGE"
 )
 
 type RequestMessageCommand struct {
@@ -13,15 +14,15 @@ type RequestMessageCommand struct {
 }
 
 func CreateRequestMessageCommand(channel byte, messageId byte) RequestMessageCommand {
-	cmd := newAntCommandInfo(RequestMessageCommandId, "REQUEST_MESSAGE")
+	cmd := newAntCommandInfo(RequestMessageCommandId, RequestMessageCommandName)
 	return RequestMessageCommand{
 		AntCommandInfo: cmd,
-		Channel:    channel,
-		MessageId:  messageId,
+		Channel:        channel,
+		MessageId:      messageId,
 	}
 }
 
-func (cmd RequestMessageCommand) data() []byte {
+func (cmd RequestMessageCommand) Data() []byte {
 	return []byte{
 		cmd.Channel,
 		cmd.MessageId,

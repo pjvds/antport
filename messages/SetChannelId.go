@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	SetChannelIdCommandId = byte(0x51)
+	SetChannelIdCommandId   = byte(0x51)
+	SetChannelIdCommandName = "SET_CHANNEL_ID"
 )
 
 type SetChannelIdCommand struct {
@@ -23,7 +24,7 @@ type SetChannelIdCommand struct {
 }
 
 func CreateSetChannelIdCommand(channelNumber byte, deviceNumber int, deviceTypeId byte, transType byte) SetChannelIdCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, "SET_CHANNEL_ID")
+	cmd := newAntCommandInfo(SetChannelIdCommandId, SetChannelIdCommandName)
 	return SetChannelIdCommand{
 		AntCommandInfo: cmd,
 		ChannelNumber:  channelNumber,

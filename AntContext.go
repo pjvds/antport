@@ -74,7 +74,8 @@ func (ctx *AntContext) HardResetSystem() {
 }
 
 func (ctx *AntContext) initCapabilities() {
-	// ctx.SendCommand(CreateRequestMessageCommand(0, 0x54))
+	cmd := messages.CreateRequestMessageCommand(0, 0x54)
+	ctx.SendCommand(cmd)
 	reply, err := ctx.ReceiveReply()
 
 	if err != nil {
@@ -112,11 +113,16 @@ func (ctx *AntContext) initCapabilities() {
 }
 
 func (ctx *AntContext) SendCommand(cmd messages.AntCommand) {
-	data := cmd.Data()
+	log.Printf("sending command %v", cmd.Name())
+
+	msg := messages.NewMessage(cmd)
+	data := msg.Pack()
 	ctx.device.Write(data)
 }
 
 func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
+	log.Println("receiving reply...")
+
 	buffer := make([]byte, 8)
 	n, err := ctx.device.Read(buffer)
 
@@ -129,9 +135,30 @@ func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err er
 		}
 	}
 
-	if err != nil || n <= 0 {
+	if err != nil {
+		log.Println("error reading from device: " + err.Error())
 		return nil, err
 	}
-	return nil, nil
-	//return messages.AntCommandMessage{}
+
+	log.Printf("%v bytes read from device", n)
+	data := make([]byte, 0)
+	name := messages.CommandIdToName(buffer[2])
+	size := buffer[1]
+
+	log.Printf("ANT message name: %v", name)
+	log.Printf("ANT message length: %v", size)
+	log.Printf("%x", buffer[0:n])
+	if size > 0 {
+		data = buffer[3:size]
+	}
+
+	reply = &messages.AntCommandMessage{
+		SYNC: buffer[0],
+		Id:   buffer[2],
+		Name: name,
+		Data: data,
+	}
+
+	log.Println("reply received correcly")
+	return reply, nil
 }

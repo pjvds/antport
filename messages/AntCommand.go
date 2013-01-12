@@ -3,11 +3,13 @@ package messages
 import ()
 
 type AntCommandInfo struct {
-	Id   byte
-	Name string
+	id   byte
+	name string
 }
 
 type AntCommand interface {
+	Id() byte
+	Name() string
 	Data() []byte
 }
 
@@ -29,28 +31,15 @@ const (
 // Creates a new AntCommandInfo message
 func newAntCommandInfo(id byte, name string) AntCommandInfo {
 	return AntCommandInfo{
-		Id:   id,
-		Name: name,
+		id:   id,
+		name: name,
 	}
 }
 
-func (message *AntCommandMessage) Pack() []byte {
-	overheadSize := MESG_SYNC_SIZE + MESG_SIZE_SIZE + MESG_ID_SIZE + MESG_CHECKSUM_SIZE
-	dataSize := byte(len(message.Data))
-	dataOffset := byte(3)
-	data := make([]byte, overheadSize+dataSize)
+func (cmd AntCommandInfo) Id() byte {
+	return cmd.id
+}
 
-	// Set message values
-	data[0] = message.SYNC
-	data[1] = dataSize
-	data[2] = message.Id
-
-	// Set message data/payload
-	for i := byte(0); i < dataSize; i++ {
-		data[i+dataOffset] = message.Data[i]
-	}
-
-	// Set checksum at last byte
-	data[len(data)-1] = GenerateChecksum(data)
-	return data
+func (cmd AntCommandInfo) Name() string {
+	return cmd.name
 }
