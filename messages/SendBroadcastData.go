@@ -3,8 +3,8 @@ package messages
 import ()
 
 const (
-	SEND_BROADCAST_DATA_MSG_ID   = byte(0x43)
-	SendBroadcastDataCommandName = "SET_CHANNEL_PERIOD"
+	SEND_BROADCAST_DATA_MSG_ID   = byte(0x4e)
+	SendBroadcastDataCommandName = "SEND_BROADCAST_DATA"
 )
 
 type SendBroadcastDataCommand struct {
