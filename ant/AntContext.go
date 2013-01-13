@@ -149,7 +149,7 @@ func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err er
 	}
 
 	data := make([]byte, 0)
-	name := messages.CommandIdToName(buffer[2])
+	name := messages.InMessageIdToName(buffer[2])
 	size := buffer[1]
 
 	log.Printf("ANT message received: %v", name)

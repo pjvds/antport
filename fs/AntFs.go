@@ -10,12 +10,6 @@ type AntFsContext struct {
 	network *ant.AntNetwork
 }
 
-var (
-	search_network_key = [8]byte{
-		0xa8, 0xa4, 0x23, 0xb9,
-		0xf5, 0x5e, 0x63, 0xc1}
-)
-
 const (
 	search_freq     = 0x32
 	search_period   = 0x1000
@@ -23,9 +17,15 @@ const (
 	search_waveform = 0x5300
 )
 
+var (
+	search_network_key = [8]byte{
+		0xa8, 0xa4, 0x23, 0xb9,
+		0xf5, 0x5e, 0x63, 0xc1}
+)
+
 func NewAntFsContext(antCtx *ant.AntContext) *AntFsContext {
 	return &AntFsContext{
-		ant: antCtx,
+		antCtx: antCtx,
 	}
 }
 
