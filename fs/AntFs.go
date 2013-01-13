@@ -14,7 +14,7 @@ const (
 	search_freq     = 0x32
 	search_period   = 0x1000
 	search_timeout  = 255
-	search_waveform = 0x5300
+	search_waveform = 0x0053
 )
 
 var (
@@ -25,7 +25,7 @@ var (
 
 func NewAntFsContext(antCtx *ant.AntContext) *AntFsContext {
 	return &AntFsContext{
-		antCtx: antCtx,
+		ant: antCtx,
 	}
 }
 
