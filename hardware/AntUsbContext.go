@@ -75,8 +75,11 @@ func (ctx *AntUsbContext) ListAntUsbDevices() ([]*AntUsbDevice, error) {
 	channels := make([]*AntUsbDevice, nDevices)
 	for i := 0; i < len(devs); i++ {
 		usbDevice := devs[i]
+		channels[i], err = newAntUsbDevice(usbDevice)
 
-		channels[i] = newAntUsbDevice(usbDevice)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return channels, nil
 }

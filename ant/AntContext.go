@@ -136,7 +136,7 @@ func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err er
 
 	for retries := 1; retries < ctx.MaxRetry+1; retries++ {
 		if err != nil {
-			log.Println("error while receiving reply: " + err.Error())
+			log.Printf("error while receiving reply, %v bytes read: %s", n, err)
 			log.Printf("will retry (%v/%v)", retries, ctx.MaxRetry)
 
 			n, err = ctx.device.Read(buffer)
