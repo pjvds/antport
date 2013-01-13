@@ -34,8 +34,10 @@ func (ctx *AntFsContext) OpenAntsFsSearchChannel() {
 	ctx.channel = ctx.ant.Channels[0]
 	ctx.network = ctx.ant.Networks[0]
 
+	network := ctx.network
+	network.SetNetworkKey(search_network_key)
+
 	channel := ctx.channel
-	channel.SetNetworkKey(0, search_network_key)
 	channel.Assign(0x00, ctx.network.Number)
 	channel.SetPeriod(4096)
 	channel.SetRfFrequenty(50)

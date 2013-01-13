@@ -29,14 +29,6 @@ type AntChannel struct {
 	number byte
 }
 
-func (channel AntChannel) SetNetworkKey(networkNumber byte, key [8]byte) {
-	ant := channel.ant
-	cmd := messages.CreateSetNetworkKeyCommand(networkNumber, key)
-
-	ant.SendCommand(cmd)
-	ant.ReceiveReply()
-}
-
 func (channel AntChannel) Assign(channelType, networkNumber byte) {
 	ant := channel.ant
 	cmd := messages.CreateAssignChannelCommand(channel.number, channelType, networkNumber)

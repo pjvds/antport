@@ -41,8 +41,6 @@ func (device *AntUsbDevice) Read(buffer []byte) (int, error) {
 
 	if err != nil {
 		log.Println("error while reading from device: " + err.Error())
-	} else {
-		log.Printf("%v bytes read from device", n)
 	}
 
 	return n, err
@@ -54,8 +52,6 @@ func (device *AntUsbDevice) Write(data []byte) (int, error) {
 
 	if err != nil {
 		log.Println("error while writing to device: " + err.Error())
-	} else {
-		log.Printf("%v bytes written to device", n)
 	}
 
 	return n, err

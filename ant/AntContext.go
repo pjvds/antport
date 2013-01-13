@@ -124,7 +124,7 @@ func (ctx *AntContext) SendCommand(cmd messages.AntCommand) (ok bool, err error)
 		return false, err
 	}
 
-	log.Printf("ANT message name: %v", msg.Name)
+	log.Printf("ANT message send: %v", msg.Name)
 	return true, nil
 }
 
@@ -152,9 +152,7 @@ func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err er
 	name := messages.CommandIdToName(buffer[2])
 	size := buffer[1]
 
-	log.Printf("ANT message name: %v", name)
-	log.Printf("ANT message length: %v", size)
-	log.Printf("ANT message raw: %x", buffer[0:n])
+	log.Printf("ANT message received: %v", name)
 	if size > 0 {
 		data = buffer[3:size]
 	}

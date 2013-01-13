@@ -1,5 +1,9 @@
 package ant
 
+import (
+	"github.com/pjvds/antport/messages"
+)
+
 type AntNetwork struct {
 	ant *AntContext
 
@@ -15,4 +19,12 @@ type AntNetwork struct {
 	// the ability to deploy a network with varied levels of 
 	// access control and security options. 
 	Key [8]byte
+}
+
+func (network AntNetwork) SetNetworkKey(key [8]byte) {
+	ant := network.ant
+	cmd := messages.CreateSetNetworkKeyCommand(network.Number, key)
+
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
 }
