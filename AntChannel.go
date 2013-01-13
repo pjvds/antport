@@ -4,6 +4,18 @@ import (
 	"github.com/pjvds/antport/messages"
 )
 
+// Channel types
+const (
+	BIDIRECTIONAL_RECEIVE  = 0x00
+	BIDIRECTIONAL_TRANSMIT = 0x10
+
+	SHARED_BIDIRECTIONAL_RECEIVE  = 0x20
+	SHARED_BIDIRECTIONAL_TRANSMIT = 0x30
+
+	UNIDIRECTIONAL_RECEIVE_ONLY  = 0x40
+	UNIDIRECTIONAL_TRANSMIT_ONLY = 0x50
+)
+
 /* ANT channel consists of one or more transmitting 
    nodes and one or more receiving nodes depending on 
    the network topology. Any node can transmit or 
@@ -61,6 +73,14 @@ func (channel AntChannel) SetSearchTimeout(timeout byte) {
 func (channel AntChannel) SetRfFrequenty(rfFrequenty byte) {
 	ant := channel.ant
 	cmd := messages.CreateSetChannelRfFrequentyCommand(channel.number, rfFrequenty)
+
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
+}
+
+func (channel AntChannel) SetSearchWaveform(waveform uint16) {
+	ant := channel.ant
+	cmd := messages.CreateSetChannelSearchWaveformCommand(channel.number, waveform)
 
 	ant.SendCommand(cmd)
 	ant.ReceiveReply()

@@ -7,10 +7,10 @@ type AntFsContext struct {
 }
 
 const (
-	search_freq     = 50
+	search_freq     = 0x32
 	search_period   = 0x1000
 	search_timeout  = 255
-	search_waveform = 0x0053
+	search_waveform = 0x5300
 )
 
 func NewAntFsContext(ant *AntContext) *AntFsContext {
@@ -27,7 +27,10 @@ func (ctx *AntFsContext) OpenAntsFsSearchChannel() {
 	channel := ctx.channel
 	channel.SetNetworkKey(0, SEARCH_NETWORK_KEY)
 	channel.Assign(0x00, ctx.network.number)
-	channel.SetId(0, 0, 0)
-	channel.SetPeriod(search_period)
+	channel.SetPeriod(4096)
+	channel.SetRfFrequenty(50)
+	channel.SetSearchTimeout(255)
+	channel.SetSearchWaveform(search_waveform)
+	channel.SetId(0, 0x01, 0)
 	channel.Open()
 }
