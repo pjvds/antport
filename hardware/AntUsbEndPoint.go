@@ -1,8 +1,8 @@
 package hardware
 
 import (
+	"code.google.com/p/log4go"
 	"github.com/kylelemons/gousb/usb"
-	"log"
 )
 
 type AntUsbEndpoint struct {
@@ -14,15 +14,13 @@ func (endPoint AntUsbEndpoint) Read(buffer []byte) (n int, err error) {
 }
 
 func (endPoint AntUsbEndpoint) Write(buffer []byte) (n int, err error) {
-	log.Printf("sending %v to end point", len(buffer))
+	log4go.Debug("sending %v to end point", len(buffer))
 
 	n, err = endPoint.ePoint.Write(buffer)
 
 	if err != nil {
-		log.Println("error while sending to end point: " + err.Error())
-	} else {
-		log.Printf("%v bytes send to end point", n)
+		return 0, log4go.Error("error while sending to end point: %s", err)
 	}
-
+	log4go.Debug("%v bytes send to end point", n)
 	return n, err
 }
