@@ -50,6 +50,14 @@ func (channel AntChannel) SetPeriod(period uint16) {
 	ant.ReceiveReply()
 }
 
+func (channel AntChannel) SetSearchTimeout(timeout byte) {
+	ant := channel.ant
+	cmd := messages.CreateSetSearchTimeoutCommand(channel.number, timeout)
+
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
+}
+
 func (channel AntChannel) Open() {
 	ant := channel.ant
 	cmd := messages.CreateOpenChannelCommand(channel.number)
