@@ -3,7 +3,7 @@ package messages
 import ()
 
 const (
-	SetChannelSearchTimeoutCommandId   = byte(0x44)
+	SET_CHANNEL_SEARCH_TIMEOUT_MSG_ID  = byte(0x44)
 	SetChannelSearchTimeoutCommandName = "SET_CHANNEL_SEARCH_TIMEOUT"
 )
 
@@ -22,7 +22,7 @@ type SetChannelSearchTimeoutCommand struct {
 }
 
 func CreateSetChannelSearchTimeoutCommand(channelNumber byte, searchTimeout byte) SetChannelSearchTimeoutCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, SetChannelSearchTimeoutCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, SetChannelSearchTimeoutCommandName)
 	return SetChannelSearchTimeoutCommand{
 		AntCommandInfo: cmd,
 		ChannelNumber:  channelNumber,

@@ -3,7 +3,7 @@ package messages
 import ()
 
 const (
-	ResetSystemCommandId   = byte(0x4a)
+	RESET_SYSTEM_MSG_ID   = byte(0x4a)
 	ResetSystemCommandName = "RESET_SYSTEM"
 )
 
@@ -12,7 +12,7 @@ type ResetSystemCommand struct {
 }
 
 func CreateResetSystemCommand() ResetSystemCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, ResetSystemCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, ResetSystemCommandName)
 	return ResetSystemCommand{
 		AntCommandInfo: cmd,
 	}

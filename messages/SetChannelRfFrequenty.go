@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	SetChannelRfFrequentyCommandId   = byte(0x45)
+	SET_CHANNEL_RF_FREQ_MSG_ID   = byte(0x45)
 	SetChannelRfFrequentyCommandName = "SET_CHANNEL_RF_FREQ"
 )
 
@@ -19,7 +19,7 @@ type SetChannelRfFrequentyCommand struct {
 }
 
 func CreateSetChannelRfFrequentyCommand(channelNumber byte, channelRfFrequenty byte) SetChannelRfFrequentyCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, SetChannelRfFrequentyCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, SetChannelRfFrequentyCommandName)
 	return SetChannelRfFrequentyCommand{
 		AntCommandInfo:     cmd,
 		ChannelNumber:      channelNumber,

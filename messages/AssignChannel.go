@@ -3,8 +3,8 @@ package messages
 import ()
 
 const (
-	AssignChannelCommandId   = byte(0x42)
-	AssignChannelCommandName = "ASSIGN_CHANNEL"
+	ASSIGN_CHANNEL_MSG_ID   = byte(0x42)
+	ASSIGN_CHANNEL_MSG_NAME = "ASSIGN_CHANNEL"
 )
 
 type AssignChannelCommand struct {
@@ -16,7 +16,7 @@ type AssignChannelCommand struct {
 }
 
 func CreateAssignChannelCommand(channelNumber byte, channelType byte, networkNumber byte) AssignChannelCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, AssignChannelCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, ASSIGN_CHANNEL_MSG_NAME)
 	return AssignChannelCommand{
 		AntCommandInfo: cmd,
 		ChannelNumber:  channelNumber,

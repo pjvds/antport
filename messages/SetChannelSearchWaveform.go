@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	SetChannelSearchWaveformCommandId   = byte(0x49)
+	SET_CHANNEL_SEARCH_WAVEFORM_MSG_ID  = byte(0x49)
 	SetChannelSearchWaveformCommandName = "SET_CHANNEL_SEARCH_WAVEFORM"
 )
 
@@ -19,7 +19,7 @@ type SetChannelSearchWaveformCommand struct {
 }
 
 func CreateSetChannelSearchWaveformCommand(channelNumber byte, channelSearchWaveform uint16) SetChannelSearchWaveformCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, SetChannelSearchWaveformCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, SetChannelSearchWaveformCommandName)
 	return SetChannelSearchWaveformCommand{
 		AntCommandInfo:        cmd,
 		ChannelNumber:         channelNumber,

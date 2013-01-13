@@ -3,7 +3,7 @@ package messages
 import ()
 
 const (
-	OpenChannelCommandId   = byte(0x4b)
+	OPEN_CHANNEL_MSG_ID   = byte(0x4b)
 	OpenChannelCommandName = "OPEN_CHANNEL"
 )
 
@@ -21,7 +21,7 @@ type OpenChannelCommand struct {
 }
 
 func CreateOpenChannelCommand(channelNumber byte) OpenChannelCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, OpenChannelCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, OpenChannelCommandName)
 	return OpenChannelCommand{
 		AntCommandInfo: cmd,
 		ChannelNumber:  channelNumber,

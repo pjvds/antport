@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	CapabilitiesCommandId   = byte(0x54)
+	CAPABILITIES_MSG_ID   = byte(0x54)
 	CapabilitiesCommandName = "CAPABILITIES"
 )
 
@@ -18,9 +18,9 @@ type CapabilitiesReply struct {
 }
 
 func NewCapabilitiesReply(msg *AntCommandMessage) (*CapabilitiesReply, error) {
-	if msg.Id != CapabilitiesCommandId {
+	if msg.Id != CAPABILITIES_MSG_ID {
 		log.Println("invalid message: wrong message id")
-		log.Printf("expected: %v, actual: %v", CapabilitiesCommandId, msg.Id)
+		log.Printf("expected: %v, actual: %v", CAPABILITIES_MSG_ID, msg.Id)
 
 		return nil, errors.New("invallid message: wrong message id")
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	SetNetworkKeyCommandId   = byte(0x46)
+	SET_NETWORK_KEY_MSG_ID   = byte(0x46)
 	SetNetworkKeyCommandName = "SET_NETWORK_KEY"
 )
 
@@ -18,7 +18,7 @@ type SetNetworkKeyCommand struct {
 }
 
 func CreateSetNetworkKeyCommand(networkNumber byte, networkKey [8]byte) SetNetworkKeyCommand {
-	cmd := newAntCommandInfo(SetNetworkKeyCommandId, SetNetworkKeyCommandName)
+	cmd := newAntCommandInfo(SET_NETWORK_KEY_MSG_ID, SetNetworkKeyCommandName)
 	return SetNetworkKeyCommand{
 		AntCommandInfo: cmd,
 		NetworkNumber:  networkNumber,

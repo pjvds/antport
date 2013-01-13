@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	SetChannelPeriodCommandId   = byte(0x43)
+	SET_CHANNEL_PERIOD_MSG_ID   = byte(0x43)
 	SetChannelPeriodCommandName = "SET_CHANNEL_PERIOD"
 )
 
@@ -31,7 +31,7 @@ type SetChannelPeriodCommand struct {
 }
 
 func CreateSetChannelPeriodCommand(channelNumber byte, messagingPeriod uint16) SetChannelPeriodCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, SetChannelPeriodCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, SetChannelPeriodCommandName)
 	return SetChannelPeriodCommand{
 		AntCommandInfo:  cmd,
 		ChannelNumber:   channelNumber,

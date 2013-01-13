@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	RecvBroadcastDataCommandId   = byte(0x4e)
+	RECV_BROADCAST_DATA_MSG_ID   = byte(0x4e)
 	RecvBroadcastDataCommandName = "RECV_BROADCAST_DATA"
 )
 
@@ -18,9 +18,9 @@ type RecvBroadcastDataReply struct {
 }
 
 func CreateRecvBroadcastDataReply(msg AntCommandMessage) (*RecvBroadcastDataReply, error) {
-	if msg.Id != RecvBroadcastDataCommandId {
+	if msg.Id != RECV_BROADCAST_DATA_MSG_ID {
 		log.Println("invalid message: wrong message id")
-		log.Printf("expected: %v, actual: %v", RecvBroadcastDataCommandId, msg.Id)
+		log.Printf("expected: %v, actual: %v", RECV_BROADCAST_DATA_MSG_ID, msg.Id)
 
 		return nil, errors.New("invallid message: wrong message id")
 	}

@@ -3,7 +3,7 @@ package messages
 import ()
 
 const (
-	SendBroadcastDataCommandId   = byte(0x43)
+	SEND_BROADCAST_DATA_MSG_ID   = byte(0x43)
 	SendBroadcastDataCommandName = "SET_CHANNEL_PERIOD"
 )
 
@@ -16,7 +16,7 @@ type SendBroadcastDataCommand struct {
 }
 
 func CreateSendBroadcastDataCommand(channelNumber byte, data [8]byte) SendBroadcastDataCommand {
-	cmd := newAntCommandInfo(SetChannelIdCommandId, SendBroadcastDataCommandName)
+	cmd := newAntCommandInfo(SET_CHANNEL_ID_MSG_ID, SendBroadcastDataCommandName)
 	return SendBroadcastDataCommand{
 		AntCommandInfo: cmd,
 		BroadcastData:  data,
