@@ -1,6 +1,7 @@
 package ant
 
 import (
+	"code.google.com/p/log4go"
 	"github.com/pjvds/antport/messages"
 )
 
@@ -84,4 +85,25 @@ func (channel AntChannel) Open() {
 
 	ant.SendCommand(cmd)
 	ant.ReceiveReply()
+}
+
+func (channel AntChannel) Status() messages.CHANNEL_STATUS {
+	ant := channel.ant
+	cmd := messages.CreateRequestMessageCommand(channel.number, messages.CHANNEL_STATUS_MSG_ID)
+
+	ant.SendCommand(cmd)
+	replyMsg, err := ant.ReceiveReply()
+
+	if err != nil {
+		log4go.Error("error: %s", err)
+	}
+
+	reply, err := messages.CreateChannelStatusReply(replyMsg)
+
+	if err != nil {
+		log4go.Error("error: %s", err)
+	}
+
+	log4go.Debug("channel %s status: %v", channel.number, reply.Status)
+	return reply.Status
 }

@@ -45,4 +45,6 @@ func (ctx *AntFsContext) OpenAntsFsSearchChannel() {
 	channel.SetSearchWaveform(search_waveform)
 	channel.SetId(0, 0x01, 0)
 	channel.Open()
+
+	channel.Status()
 }
