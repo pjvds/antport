@@ -1,19 +1,14 @@
-package antport
+package ant
 
 import (
 	"fmt"
+	"github.com/pjvds/antport/hardware"
 	"github.com/pjvds/antport/messages"
 	"log"
 )
 
-var (
-	SEARCH_NETWORK_KEY = [8]byte{
-		0xa8, 0xa4, 0x23, 0xb9,
-		0xf5, 0x5e, 0x63, 0xc1}
-)
-
 type AntContext struct {
-	device       AntDevice
+	device       hardware.AntDevice
 	Initialized  bool
 	Capabilities *AntCapabilityInfo
 	MaxRetry     int
@@ -21,29 +16,7 @@ type AntContext struct {
 	Networks     []*AntNetwork
 }
 
-type AntNetwork struct {
-	ant *AntContext
-
-	// The Network Number is an 8-bit field with the 
-	// range of acceptable values being from 0 to the 
-	// maximum number defined by the ANT implementation.
-	number byte
-
-	// The Network Key is an 8-byte field which is configurable
-	// by the host application. A particular Network
-	// Number will have a corresponding Network Key.  
-	// The Network Number and the Network Key together provide 
-	// the ability to deploy a network with varied levels of 
-	// access control and security options. 
-	key [8]byte
-}
-
-type AntCapabilityInfo struct {
-	MaxChannels byte
-	MaxNetworks byte
-}
-
-func CreateAntContext(device AntDevice) *AntContext {
+func CreateAntContext(device hardware.AntDevice) *AntContext {
 	return &AntContext{
 		device:   device,
 		MaxRetry: 1000,
@@ -116,8 +89,8 @@ func (ctx *AntContext) initCapabilities() {
 		var key [8]byte
 		networks[i] = &AntNetwork{
 			ant:    ctx,
-			number: byte(i),
-			key:    key,
+			Number: byte(i),
+			Key:    key,
 		}
 	}
 	ctx.Networks = networks

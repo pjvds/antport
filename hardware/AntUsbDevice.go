@@ -1,4 +1,4 @@
-package antport
+package hardware
 
 import (
 	"github.com/kylelemons/gousb/usb"
@@ -10,11 +10,6 @@ type AntUsbDevice struct {
 	usbDevice   *usb.Device
 	inEndpoint  usb.Endpoint
 	outEndpoint usb.Endpoint
-}
-
-type AntDevice interface {
-	Read(buffer []byte) (n int, err error)
-	Write(data []byte) (n int, err error)
 }
 
 func newAntUsbDevice(usbDevice *usb.Device) *AntUsbDevice {

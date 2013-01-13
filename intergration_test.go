@@ -1,6 +1,9 @@
 package antport
 
 import (
+	"github.com/pjvds/antport/ant"
+	"github.com/pjvds/antport/fs"
+	"github.com/pjvds/antport/hardware"
 	"log"
 	"testing"
 )
@@ -10,11 +13,11 @@ func TestOpenContext(t *testing.T) {
 	defer antContext.Close()
 	defer device.Close()
 
-	ctx := CreateAntContext(device)
+	ctx := ant.CreateAntContext(device)
 	ctx.HardResetSystem()
 	ctx.Init()
 
-	fs := NewAntFsContext(ctx)
+	fs := fs.NewAntFsContext(ctx)
 	fs.OpenAntsFsSearchChannel()
 
 	reply, err := ctx.ReceiveReply()
@@ -22,8 +25,8 @@ func TestOpenContext(t *testing.T) {
 	log.Printf("error: %s", err)
 }
 
-func GetSingleChannelOrFail(t *testing.T) (*AntUsbDevice, *AntUsbContext) {
-	ctx := NewUsbContext()
+func GetSingleChannelOrFail(t *testing.T) (*hardware.AntUsbDevice, *hardware.AntUsbContext) {
+	ctx := hardware.NewUsbContext()
 	channels, err := ctx.ListAntUsbDevices()
 
 	if err != nil {
@@ -43,7 +46,7 @@ func GetSingleChannelOrFail(t *testing.T) (*AntUsbDevice, *AntUsbContext) {
 	return channel, ctx
 }
 
-func CloseContextAndFail(t *testing.T, ctx *AntUsbContext, message string) {
+func CloseContextAndFail(t *testing.T, ctx *hardware.AntUsbContext, message string) {
 	defer ctx.Close()
 	t.Error(message)
 	t.FailNow()

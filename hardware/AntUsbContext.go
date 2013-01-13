@@ -1,4 +1,4 @@
-package antport
+package hardware
 
 import (
 	"github.com/kylelemons/gousb/usb"

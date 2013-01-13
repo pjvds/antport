@@ -1,4 +1,4 @@
-package antport
+package ant
 
 import (
 	"github.com/pjvds/antport/messages"

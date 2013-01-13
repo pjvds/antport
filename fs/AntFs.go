@@ -1,10 +1,20 @@
-package antport
+package fs
+
+import (
+	"github.com/pjvds/antport/ant"
+)
 
 type AntFsContext struct {
-	ant     *AntContext
-	channel *AntChannel
-	network *AntNetwork
+	ant     *ant.AntContext
+	channel *ant.AntChannel
+	network *ant.AntNetwork
 }
+
+var (
+	search_network_key = [8]byte{
+		0xa8, 0xa4, 0x23, 0xb9,
+		0xf5, 0x5e, 0x63, 0xc1}
+)
 
 const (
 	search_freq     = 0x32
@@ -13,9 +23,9 @@ const (
 	search_waveform = 0x5300
 )
 
-func NewAntFsContext(ant *AntContext) *AntFsContext {
+func NewAntFsContext(antCtx *ant.AntContext) *AntFsContext {
 	return &AntFsContext{
-		ant: ant,
+		ant: antCtx,
 	}
 }
 
@@ -25,8 +35,8 @@ func (ctx *AntFsContext) OpenAntsFsSearchChannel() {
 	ctx.network = ctx.ant.Networks[0]
 
 	channel := ctx.channel
-	channel.SetNetworkKey(0, SEARCH_NETWORK_KEY)
-	channel.Assign(0x00, ctx.network.number)
+	channel.SetNetworkKey(0, search_network_key)
+	channel.Assign(0x00, ctx.network.Number)
 	channel.SetPeriod(4096)
 	channel.SetRfFrequenty(50)
 	channel.SetSearchTimeout(255)
