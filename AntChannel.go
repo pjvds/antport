@@ -42,6 +42,14 @@ func (channel AntChannel) SetId(deviceNumber int, networkNumber byte, transType 
 	ant.ReceiveReply()
 }
 
+func (channel AntChannel) SetPeriod(period uint16) {
+	ant := channel.ant
+	cmd := messages.CreateSetChannelPeriodCommand(channel.number, period)
+
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
+}
+
 func (channel AntChannel) Open() {
 	ant := channel.ant
 	cmd := messages.CreateOpenChannelCommand(channel.number)

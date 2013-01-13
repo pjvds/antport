@@ -51,7 +51,7 @@ type AntCapabilityInfo struct {
 func CreateAntContext(device AntDevice) *AntContext {
 	return &AntContext{
 		device:   device,
-		MaxRetry: 50,
+		MaxRetry: 1000,
 	}
 }
 
