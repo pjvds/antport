@@ -52,7 +52,15 @@ func (channel AntChannel) SetPeriod(period uint16) {
 
 func (channel AntChannel) SetSearchTimeout(timeout byte) {
 	ant := channel.ant
-	cmd := messages.CreateSetSearchTimeoutCommand(channel.number, timeout)
+	cmd := messages.CreateSetChannelSearchTimeoutCommand(channel.number, timeout)
+
+	ant.SendCommand(cmd)
+	ant.ReceiveReply()
+}
+
+func (channel AntChannel) SetRfFrequenty(rfFrequenty byte) {
+	ant := channel.ant
+	cmd := messages.CreateSetChannelRfFrequentyCommand(channel.number, rfFrequenty)
 
 	ant.SendCommand(cmd)
 	ant.ReceiveReply()
