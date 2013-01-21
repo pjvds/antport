@@ -27,4 +27,4 @@ Now when you build the project you can get the following error:
 
 	Just wondering if anyone has looked into this since the last post? I tried to compile Kyle's gousb package on OSX today but ran into this problem; the quick hack was to change the struct's flexible member size to 1 in libusb.h.
 
-You can find `libusb.h` in `/usr/local/include/libusb-1.0/libusb.h`. [Here](https://gist.github.com/4578277#file-libusb-h-L937) is a gist of my modified `libusb.h`. The change has been done at line 937.
+You can find `libusb.h` in `/usr/local/include/libusb-1.0/libusb.h`. [Here](https://gist.github.com/4578277#file-libusb-h-L937) is a gist of my modified `libusb.h`. The change has been made at line 937.

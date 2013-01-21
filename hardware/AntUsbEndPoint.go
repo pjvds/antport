@@ -2,7 +2,7 @@ package hardware
 
 import (
 	"code.google.com/p/log4go"
-	"github.com/kylelemons/gousb/usb"
+	"github.com/pjvds/gousb/usb"
 )
 
 type AntUsbEndpoint struct {
