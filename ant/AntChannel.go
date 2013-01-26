@@ -35,7 +35,6 @@ func (channel AntChannel) Assign(channelType, networkNumber byte) {
 	cmd := messages.CreateAssignChannelCommand(channel.number, channelType, networkNumber)
 
 	ant.SendCommand(cmd)
-	ant.ReceiveReply()
 }
 
 func (channel AntChannel) SetId(deviceNumber int, networkNumber byte, transType byte) {
