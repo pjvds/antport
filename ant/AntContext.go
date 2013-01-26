@@ -7,9 +7,10 @@ import (
 )
 
 type AntContext struct {
-	device   hardware.AntDevice
-	sender   messageSender
-	receiver messageReceiver
+	device       hardware.AntDevice
+	sender       messageSender
+	receiver     messageReceiver
+	communicator AntCommunicator
 
 	Initialized  bool
 	Capabilities *AntCapabilityInfo
@@ -19,9 +20,17 @@ type AntContext struct {
 }
 
 func CreateAntContext(device hardware.AntDevice) *AntContext {
+	sender := newSender(device)
+	receiver := newReceiver(device)
+
+	communicator := newCommunicator(receiver, sender)
+
 	return &AntContext{
-		device:   device,
-		MaxRetry: 1000,
+		device:       device,
+		sender:       sender,
+		receiver:     receiver,
+		communicator: communicator,
+		MaxRetry:     1000,
 	}
 }
 
