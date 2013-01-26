@@ -15,20 +15,20 @@ type AntUsbDevice struct {
 func newAntUsbDevice(usbDevice *usb.Device) (*AntUsbDevice, error) {
 	log4go.Debug("creating new AntUsbDevice")
 
-	log4go.Debug("opening IN endpoint...")
-	inEndpoint, err := usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_IN))
-
-	if err != nil {
-		return nil, log4go.Error("error opening endpoint: %s", err)
-	} else {
-		log4go.Debug("IN endpoint opened succesfully")
-	}
-
 	log4go.Debug("opening OUT endpoint...")
 	outEndpoint, err := usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_OUT))
 
 	if err != nil {
 		return nil, log4go.Error("error opening endpoint: " + err.Error())
+	} else {
+		log4go.Debug("OUT endpoint opened succesfully")
+	}
+
+	log4go.Debug("opening IN endpoint...")
+	inEndpoint, err := usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_IN))
+
+	if err != nil {
+		return nil, log4go.Error("error opening endpoint: %s", err)
 	} else {
 		log4go.Debug("IN endpoint opened succesfully")
 	}

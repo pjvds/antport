@@ -40,17 +40,22 @@ func (ctx *AntContext) ResetSystem() {
 
 // A hard reset can be preformed on ANT hardware by
 // sending 15 zero's. This method will retry until succeeds.
-func (ctx *AntContext) HardResetSystem() {
+func (ctx *AntContext) HardResetSystem(retryCount byte) error {
 	log.Println("hard resetting device system")
 	data := make([]byte, 15)
 	n, err := ctx.device.Write(data)
 
-	for n != 15 || err != nil {
+	for retry := byte(0); n != 15 || err != nil; retry++ {
+		if retry > retryCount {
+			return err
+		}
+
 		log.Println("hard reset failed.")
 		n, err = ctx.device.Write(data)
 	}
 
 	log.Println("hard reset ok")
+	return nil
 }
 
 func (ctx *AntContext) initCapabilities() {
@@ -131,7 +136,7 @@ func (ctx *AntContext) SendCommand(cmd messages.AntCommand) (ok bool, err error)
 func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
 	log.Println("receiving reply...")
 
-	buffer := make([]byte, 8)
+	buffer := make([]byte, 16)
 	n, err := ctx.device.Read(buffer)
 
 	for retries := 1; retries < ctx.MaxRetry+1; retries++ {
