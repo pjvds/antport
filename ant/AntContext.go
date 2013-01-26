@@ -42,11 +42,13 @@ func (ctx *AntContext) Init() {
 // Reset system and initialize capabilities
 func (ctx *AntContext) ResetSystem() {
 	cmd := messages.CreateResetSystemCommand()
-
-	ctx.SendCommand(cmd)
-	ctx.ReceiveReply()
+	ctx.Send(cmd).WaitForCompletion()
 
 	ctx.initCapabilities()
+}
+
+func (ctx *AntContext) Send(message messages.AntCommand) MessageTicket {
+	return ctx.communicator.Send(message)
 }
 
 func (ctx *AntContext) SendCommand(message messages.AntCommand) {
