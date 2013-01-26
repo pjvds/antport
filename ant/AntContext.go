@@ -1,7 +1,6 @@
 package ant
 
 import (
-	"fmt"
 	"github.com/pjvds/antport/hardware"
 	"github.com/pjvds/antport/messages"
 	"log"
@@ -101,74 +100,4 @@ func (ctx *AntContext) initCapabilities() {
 	ctx.Networks = networks
 
 	log.Printf("context capabilities initialized: %s", ctx.Capabilities)
-}
-
-func (ctx *AntContext) SendCommand(cmd messages.AntCommand) (ok bool, err error) {
-	log.Printf("sending command: %v", cmd.Name())
-
-	msg := messages.NewMessage(cmd)
-	data := msg.Pack()
-	n, err := ctx.device.Write(data)
-
-	for retries := 1; retries < ctx.MaxRetry+1; retries++ {
-		if err != nil {
-			log.Println("error while writing to device: " + err.Error())
-			log.Printf("will retry (%v/%v)", retries, ctx.MaxRetry)
-
-			n, err = ctx.device.Write(data)
-		}
-	}
-
-	if err != nil {
-		log.Println("error while writing to device: " + err.Error())
-		return false, err
-	}
-
-	if n != len(data) {
-		err = fmt.Errorf("number of written bytes (%v) differs from data length (%v)", n, len(data))
-		return false, err
-	}
-
-	log.Printf("ANT message send: %v", msg.Name)
-	return true, nil
-}
-
-func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
-	log.Println("receiving reply...")
-
-	buffer := make([]byte, 16)
-	n, err := ctx.device.Read(buffer)
-
-	for retries := 1; retries < ctx.MaxRetry+1; retries++ {
-		if err != nil {
-			log.Printf("error while receiving reply, %v bytes read: %s", n, err)
-			log.Printf("will retry (%v/%v)", retries, ctx.MaxRetry)
-
-			n, err = ctx.device.Read(buffer)
-		}
-	}
-
-	if err != nil {
-		log.Println("error reading from device: " + err.Error())
-		return nil, err
-	}
-
-	data := make([]byte, 0)
-	name := messages.InMessageIdToName(buffer[2])
-	size := buffer[1]
-
-	log.Printf("ANT message received: %v", name)
-	if size > 0 {
-		data = buffer[3:size]
-	}
-
-	reply = &messages.AntCommandMessage{
-		SYNC: buffer[0],
-		Id:   buffer[2],
-		Name: name,
-		Data: data,
-	}
-
-	log.Println("reply received correcly")
-	return reply, nil
 }
