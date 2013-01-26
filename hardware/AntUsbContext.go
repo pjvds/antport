@@ -2,8 +2,13 @@ package hardware
 
 import (
 	"code.google.com/p/log4go"
+	"flag"
 	"github.com/pjvds/gousb/usb"
 	"github.com/pjvds/gousb/usbid"
+)
+
+var (
+	debug = flag.Int("debug", 0, "libusb debug level (0..3)")
 )
 
 const (
@@ -17,6 +22,9 @@ type AntUsbContext struct {
 
 func NewUsbContext() *AntUsbContext {
 	usbCtx := usb.NewContext()
+
+	// Debugging can be turned on; this shows some of the inner workings of the libusb package.
+	usbCtx.Debug(*debug)
 
 	context := &AntUsbContext{
 		usb: usbCtx,
