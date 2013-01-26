@@ -16,6 +16,7 @@ func TestOpenContext(t *testing.T) {
 	ctx := ant.CreateAntContext(device)
 	ctx.HardResetSystem(5)
 	ctx.Init()
+	defer ctx.Close()
 
 	fs := fs.NewAntFsContext(ctx)
 	fs.OpenAntsFsSearchChannel()

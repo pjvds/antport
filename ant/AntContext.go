@@ -34,15 +34,18 @@ func CreateAntContext(device hardware.AntDevice) *AntContext {
 	}
 }
 
-// Initialize the context
 func (ctx *AntContext) Init() {
+	ctx.communicator.Start()
 	ctx.ResetSystem()
+}
+
+func (ctx *AntContext) Close() {
+	ctx.communicator.Stop()
 }
 
 // Reset system and initialize capabilities
 func (ctx *AntContext) ResetSystem() {
-	cmd := messages.CreateResetSystemCommand()
-	ctx.Send(cmd).WaitForCompletion()
+	ctx.Send(messages.CreateResetSystemCommand()).WaitForCompletion()
 
 	ctx.initCapabilities()
 }
