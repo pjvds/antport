@@ -7,7 +7,10 @@ import (
 )
 
 type AntContext struct {
-	device       hardware.AntDevice
+	device   hardware.AntDevice
+	sender   messageSender
+	receiver messageReceiver
+
 	Initialized  bool
 	Capabilities *AntCapabilityInfo
 	MaxRetry     int
@@ -35,6 +38,14 @@ func (ctx *AntContext) ResetSystem() {
 	ctx.ReceiveReply()
 
 	ctx.initCapabilities()
+}
+
+func (ctx *AntContext) SendCommand(message messages.AntCommand) {
+	ctx.sender.SendCommand(message)
+}
+
+func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
+	return ctx.ReceiveReply()
 }
 
 // A hard reset can be preformed on ANT hardware by
