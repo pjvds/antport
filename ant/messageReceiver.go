@@ -2,7 +2,6 @@ package ant
 
 import (
 	"github.com/pjvds/antport/hardware"
-	"github.com/pjvds/antport/messages"
 	"log"
 )
 
@@ -20,15 +19,15 @@ func newReceiver(device hardware.AntDevice) MessageReceiver {
 	}
 }
 
-func (receiver MessageReceiver) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
-	log.Println("receiving reply...")
+func (receiver MessageReceiver) Receive() (msg *AntMessage, err error) {
+	log.Println("receiving message...")
 
 	buffer := make([]byte, 16)
 	n, err := receiver.Read(buffer)
 
 	for retries := 1; retries < receiver.maxRetry+1; retries++ {
 		if err != nil {
-			log.Printf("error while receiving reply, %v bytes read: %s", n, err)
+			log.Printf("error while receiving message, %v bytes read: %s", n, err)
 			log.Printf("will retry (%v/%v)", retries, receiver.maxRetry)
 
 			n, err = receiver.Read(buffer)
@@ -41,21 +40,19 @@ func (receiver MessageReceiver) ReceiveReply() (reply *messages.AntCommandMessag
 	}
 
 	data := make([]byte, 0)
-	name := messages.InMessageIdToName(buffer[2])
-	size := buffer[1]
+	length := buffer[1]
 
-	log.Printf("ANT message received: %v", name)
-	if size > 0 {
-		data = buffer[3:size]
+	if length > 0 {
+		data = buffer[3:length]
 	}
 
-	reply = &messages.AntCommandMessage{
-		SYNC: buffer[0],
-		Id:   buffer[2],
-		Name: name,
-		Data: data,
+	msg = &AntMessage{
+		Sync:   buffer[0],
+		Id:     buffer[2],
+		Data:   data,
+		Length: length,
 	}
 
-	log.Println("reply received correcly")
-	return reply, nil
+	log.Println("message received correcly")
+	return msg, nil
 }

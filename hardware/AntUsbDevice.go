@@ -14,23 +14,16 @@ type AntUsbDevice struct {
 
 func newAntUsbDevice(usbDevice *usb.Device) (*AntUsbDevice, error) {
 	log4go.Debug("creating new AntUsbDevice")
-
-	log4go.Debug("opening OUT endpoint...")
 	outEndpoint, err := usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_OUT))
 
 	if err != nil {
 		return nil, log4go.Error("error opening endpoint: " + err.Error())
-	} else {
-		log4go.Debug("OUT endpoint opened succesfully")
 	}
 
-	log4go.Debug("opening IN endpoint...")
 	inEndpoint, err := usbDevice.OpenEndpoint(1, 0, 0, uint8(1|usb.ENDPOINT_DIR_IN))
 
 	if err != nil {
 		return nil, log4go.Error("error opening endpoint: %s", err)
-	} else {
-		log4go.Debug("IN endpoint opened succesfully")
 	}
 
 	usbDevice.WriteTimeout = time.Second * 2
@@ -67,8 +60,10 @@ func (device *AntUsbDevice) Write(data []byte) (int, error) {
 }
 
 func (channel *AntUsbDevice) Close() {
-	log4go.Debug("closing ant channel %v", channel.usbDevice.Descriptor.Product)
+	if channel.usbDevice != nil {
+		log4go.Debug("closing ant channel %v", channel.usbDevice.Descriptor.Product)
 
-	channel.usbDevice.Close()
-	channel.usbDevice = nil
+		channel.usbDevice.Close()
+		channel.usbDevice = nil
+	}
 }

@@ -3,7 +3,6 @@ package ant
 import (
 	"fmt"
 	"github.com/pjvds/antport/hardware"
-	"github.com/pjvds/antport/messages"
 	"log"
 )
 
@@ -21,11 +20,10 @@ func newSender(device hardware.AntDevice) MessageSender {
 	}
 }
 
-func (sender MessageSender) SendCommand(cmd messages.AntCommand) (ok bool, err error) {
-	log.Printf("sending command: %v", cmd.Name())
+func (sender MessageSender) Send(msg AntMessage) (err error) {
+	log.Printf("sending message: %v", msg.Id)
 
-	msg := messages.NewMessage(cmd)
-	data := msg.Pack()
+	data := msg.ToBytes()
 	n, err := sender.Write(data)
 
 	for retries := 1; retries < sender.maxRetry+1; retries++ {
@@ -39,14 +37,14 @@ func (sender MessageSender) SendCommand(cmd messages.AntCommand) (ok bool, err e
 
 	if err != nil {
 		log.Println("error while writing to device: " + err.Error())
-		return false, err
+		return err
 	}
 
 	if n != len(data) {
 		err = fmt.Errorf("number of written bytes (%v) differs from data length (%v)", n, len(data))
-		return false, err
+		return err
 	}
 
-	log.Printf("ANT message send: %v", msg.Name)
-	return true, nil
+	log.Printf("ANT message send: %v", msg.Id)
+	return nil
 }
