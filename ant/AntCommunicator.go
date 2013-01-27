@@ -8,7 +8,7 @@ import (
 
 type AntCommunicator struct {
 	receiver MessageReceiver
-	sender   messageSender
+	sender   MessageSender
 
 	outbox          chan MessageTicket
 	communications  sync.WaitGroup
@@ -18,7 +18,7 @@ type AntCommunicator struct {
 	inboxLock       sync.Mutex
 }
 
-func newCommunicator(receiver MessageReceiver, sender messageSender) AntCommunicator {
+func newCommunicator(receiver MessageReceiver, sender MessageSender) AntCommunicator {
 	return AntCommunicator{
 		receiver:        receiver,
 		sender:          sender,

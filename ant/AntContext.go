@@ -8,8 +8,6 @@ import (
 
 type AntContext struct {
 	device       hardware.AntDevice
-	sender       messageSender
-	receiver     MessageReceiver
 	communicator AntCommunicator
 
 	Initialized  bool
@@ -27,8 +25,6 @@ func CreateAntContext(device hardware.AntDevice) *AntContext {
 
 	return &AntContext{
 		device:       device,
-		sender:       sender,
-		receiver:     receiver,
 		communicator: communicator,
 		MaxRetry:     1000,
 	}
@@ -55,7 +51,7 @@ func (ctx *AntContext) Send(message messages.AntCommand) MessageTicket {
 }
 
 func (ctx *AntContext) SendCommand(message messages.AntCommand) {
-	ctx.sender.SendCommand(message)
+	ctx.Send(message)
 }
 
 func (ctx *AntContext) ReceiveReply() (reply *messages.AntCommandMessage, err error) {

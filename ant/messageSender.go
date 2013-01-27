@@ -8,20 +8,20 @@ import (
 )
 
 // Send AntCommand to AntDevice
-type messageSender struct {
+type MessageSender struct {
 	hardware.AntDevice
 
 	maxRetry int
 }
 
-func newSender(device hardware.AntDevice) messageSender {
-	return messageSender{
+func newSender(device hardware.AntDevice) MessageSender {
+	return MessageSender{
 		AntDevice: device,
 		maxRetry:  25,
 	}
 }
 
-func (sender messageSender) SendCommand(cmd messages.AntCommand) (ok bool, err error) {
+func (sender MessageSender) SendCommand(cmd messages.AntCommand) (ok bool, err error) {
 	log.Printf("sending command: %v", cmd.Name())
 
 	msg := messages.NewMessage(cmd)
