@@ -10,7 +10,7 @@ import (
 type CommunicationContext struct {
 	// Channel for incomming messages. In other words
 	// messages that come from the AntDevice.
-	Input chan AntMessage
+	input chan AntMessage
 
 	// Channel for outgoing messages. In other words
 	// messages that are written to the AntDevice.
@@ -35,7 +35,7 @@ func NewCommunicationContext(device hardware.AntDevice) CommunicationContext {
 	sender := newSender(device)
 
 	return CommunicationContext{
-		Input:  make(chan AntMessage, 255),
+		input:  make(chan AntMessage, 255),
 		Output: make(chan SendMessageTicket, 255),
 
 		device:   device,
@@ -69,7 +69,7 @@ func (ctx *CommunicationContext) readLoop() {
 		if err != nil {
 			log4go.Warn("error while receiving from device: %v", err.Error())
 		} else {
-			ctx.Input <- *msg
+			ctx.input <- *msg
 		}
 	}
 
@@ -118,7 +118,7 @@ func (ctx *CommunicationContext) matchLoop() {
 	log4go.Debug("match loop started")
 
 	for !ctx.clossing {
-		input := <-ctx.Input
+		input := <-ctx.input
 		var found bool
 
 		log4go.Debug("new message received in match loop, matching...")
@@ -184,13 +184,13 @@ func (ctx *CommunicationContext) writeLoop() {
 
 func (ctx *CommunicationContext) Close() {
 	ctx.clossing = true
-	close(ctx.Input)
+	close(ctx.input)
 	close(ctx.Output)
 
 	ctx.communicating.Wait()
 	ctx.device.Close()
 
 	ctx.device = nil
-	ctx.Input = nil
+	ctx.input = nil
 	ctx.Output = nil
 }

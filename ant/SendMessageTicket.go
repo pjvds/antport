@@ -11,14 +11,6 @@ type SendMessageTicket struct {
 	error  chan error
 }
 
-type WaitForReplyTicket struct {
-	msg     AntMessage
-	matcher func(AntMessage) bool
-
-	reply chan AntMessage
-	error chan error
-}
-
 func (t *SendMessageTicket) WaitForSendComplete() error {
 	select {
 	case err := <-t.error:

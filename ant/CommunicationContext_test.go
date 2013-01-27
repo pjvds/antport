@@ -14,11 +14,9 @@ func TestMessageChat(t *testing.T) {
 	defer ctx.Close()
 	ctx.Open()
 
-	match := func(msg AntMessage) bool {
+	ctx.Send(RequestMessage(0, MESG_CAPABILITIES_ID)).WaitForReply(func(msg AntMessage) bool {
 		return msg.Id == MESG_CAPABILITIES_ID
-	}
-
-	ctx.Send(RequestMessage(0, MESG_CAPABILITIES_ID)).WaitForReply(match)
+	})
 }
 
 func TestCommunicationContextClose(t *testing.T) {
@@ -35,7 +33,7 @@ func TestCommunicationContextClose(t *testing.T) {
 		t.Fail()
 	}
 
-	if ctx.Input != nil {
+	if ctx.input != nil {
 		t.Log("Close didn't cleanup input channel.")
 		t.Fail()
 	}
