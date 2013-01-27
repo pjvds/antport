@@ -14,15 +14,11 @@ func TestMessageChat(t *testing.T) {
 	defer ctx.Close()
 	ctx.Open()
 
-	ctx.Send(RequestMessage(0, MESG_CAPABILITIES_ID))
-	response := <-ctx.Input
-
-	if response.Id != MESG_CAPABILITIES_ID {
-		t.Errorf("Didn't receive expected reply. Expected message id 0x%x, actual 0x%x", MESG_CAPABILITIES_ID, response.Id)
-		t.Errorf("Data is: %x", response.Data)
-	} else {
-		t.Log("Received correct reply in chat test")
+	match := func(msg AntMessage) bool {
+		return msg.Id == MESG_CAPABILITIES_ID
 	}
+
+	ctx.Send(RequestMessage(0, MESG_CAPABILITIES_ID)).WaitForReply(match)
 }
 
 func TestCommunicationContextClose(t *testing.T) {

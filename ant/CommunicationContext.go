@@ -76,11 +76,11 @@ func (ctx *CommunicationContext) readLoop() {
 	log4go.Debug("read loop finished")
 }
 
-func (ctx *CommunicationContext) Send(msg AntMessage) SendMessageTicket {
+func (ctx *CommunicationContext) Send(msg AntMessage) *SendMessageTicket {
 	ticket := SendMessageTicket{ctx: ctx, msg: msg, send: make(chan AntMessage, 1), error: make(chan error)}
 	ctx.Output <- ticket
 
-	return ticket
+	return &ticket
 }
 
 func (ctx *CommunicationContext) registerWaitForReply(msg AntMessage, matcher func(AntMessage) bool) WaitForReplyTicket {
@@ -100,6 +100,7 @@ func (ctx *CommunicationContext) registerWaitForReply(msg AntMessage, matcher fu
 		if matcher(msg) {
 			ctx.unmatchedInput.Remove(e)
 			match = true
+			ticket.reply <- msg
 			break
 		}
 	}
@@ -120,15 +121,24 @@ func (ctx *CommunicationContext) matchLoop() {
 		input := <-ctx.Input
 		var found bool
 
+		log4go.Debug("new message received in match loop, matching...")
 		ctx.matchLock.Lock()
-		for e := ctx.waitingTickets.Front(); e != nil; e = e.Next() {
-			waitTicket := e.Value.(WaitForReplyTicket)
-			isMatch := waitTicket.matcher(input)
 
-			if isMatch {
-				waitTicket.reply <- input
-				found = true
-				break
+		nWaiting := ctx.waitingTickets.Len()
+		log4go.Debug("There are %v waiting tickets.", nWaiting)
+
+		if nWaiting > 0 {
+			for e := ctx.waitingTickets.Front(); e != nil; e = e.Next() {
+				waitTicket := e.Value.(WaitForReplyTicket)
+				isMatch := waitTicket.matcher(input)
+
+				if isMatch {
+					log4go.Debug("Match found!")
+					waitTicket.reply <- input
+					ctx.waitingTickets.Remove(e)
+					found = true
+					break
+				}
 			}
 		}
 
@@ -136,6 +146,7 @@ func (ctx *CommunicationContext) matchLoop() {
 		// to the unmatched list. This list is checked
 		// when a new match is registered.
 		if !found {
+			log4go.Debug("No match found. Pushing message to unmatched input list.")
 			ctx.unmatchedInput.PushBack(input)
 		}
 
