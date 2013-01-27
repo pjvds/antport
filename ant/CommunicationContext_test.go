@@ -14,7 +14,7 @@ func TestMessageChat(t *testing.T) {
 	defer ctx.Close()
 	ctx.Open()
 
-	ctx.Output <- RequestMessage(0, MESG_CAPABILITIES_ID)
+	ctx.Send(RequestMessage(0, MESG_CAPABILITIES_ID))
 	response := <-ctx.Input
 
 	if response.Id != MESG_CAPABILITIES_ID {
@@ -23,19 +23,6 @@ func TestMessageChat(t *testing.T) {
 	} else {
 		t.Log("Received correct reply in chat test")
 	}
-}
-
-func TestSendingHardReset(t *testing.T) {
-	device, antContext := GetSingleChannelOrFail(t)
-	defer antContext.Close()
-	defer device.Close()
-
-	ctx := NewCommunicationContext(device)
-	ctx.Open()
-
-	ctx.Output <- HardReset()
-
-	defer ctx.Close()
 }
 
 func TestCommunicationContextClose(t *testing.T) {
