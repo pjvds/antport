@@ -9,7 +9,7 @@ import (
 type AntContext struct {
 	device       hardware.AntDevice
 	sender       messageSender
-	receiver     messageReceiver
+	receiver     MessageReceiver
 	communicator AntCommunicator
 
 	Initialized  bool

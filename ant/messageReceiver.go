@@ -6,20 +6,21 @@ import (
 	"log"
 )
 
-type messageReceiver struct {
+// Receive AntCommand from AntDevice
+type MessageReceiver struct {
 	hardware.AntDevice
 
 	maxRetry int
 }
 
-func newReceiver(device hardware.AntDevice) messageReceiver {
-	return messageReceiver{
+func newReceiver(device hardware.AntDevice) MessageReceiver {
+	return MessageReceiver{
 		AntDevice: device,
 		maxRetry:  25,
 	}
 }
 
-func (receiver messageReceiver) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
+func (receiver MessageReceiver) ReceiveReply() (reply *messages.AntCommandMessage, err error) {
 	log.Println("receiving reply...")
 
 	buffer := make([]byte, 16)

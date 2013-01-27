@@ -7,21 +7,24 @@ import (
 )
 
 type AntCommunicator struct {
-	receiver messageReceiver
+	receiver MessageReceiver
 	sender   messageSender
 
 	outbox          chan MessageTicket
 	communications  sync.WaitGroup
 	stopping        bool
 	waitingForReply *list.List
+	inbox           *list.List
+	inboxLock       sync.Mutex
 }
 
-func newCommunicator(receiver messageReceiver, sender messageSender) AntCommunicator {
+func newCommunicator(receiver MessageReceiver, sender messageSender) AntCommunicator {
 	return AntCommunicator{
 		receiver:        receiver,
 		sender:          sender,
 		outbox:          make(chan MessageTicket, 255),
 		waitingForReply: list.New(),
+		inbox:           list.New(),
 	}
 }
 
@@ -30,7 +33,8 @@ func (c *AntCommunicator) Start() {
 	c.communications.Add(1)
 	defer c.communications.Done()
 
-	go c.process()
+	go c.readLoop()
+	go c.writeLoop()
 }
 
 func (c *AntCommunicator) Stop() {
@@ -40,7 +44,22 @@ func (c *AntCommunicator) Stop() {
 	c.communications.Wait()
 }
 
-func (c *AntCommunicator) process() {
+func (c *AntCommunicator) readLoop() {
+	c.communications.Add(1)
+	defer c.communications.Done()
+
+	for !c.stopping {
+		message, err := c.receiver.ReceiveReply()
+
+		if err == nil {
+			c.inboxLock.Lock()
+			c.inbox.PushBack(message)
+			c.inboxLock.Unlock()
+		}
+	}
+}
+
+func (c *AntCommunicator) writeLoop() {
 	c.communications.Add(1)
 	defer c.communications.Done()
 

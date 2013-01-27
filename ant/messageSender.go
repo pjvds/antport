@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+// Send AntCommand to AntDevice
 type messageSender struct {
 	hardware.AntDevice
 
