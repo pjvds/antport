@@ -37,6 +37,33 @@ func newAntUsbDevice(usbDevice *usb.Device) (*AntUsbDevice, error) {
 	}, nil
 }
 
+func (device *AntUsbDevice) Reset() {
+	log4go.Debug("resetting usb hardware")
+
+SEND_RESET:
+	// Hard reset device first
+	resetBuffer := []byte{
+		0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00}
+
+	_, err := device.Write(resetBuffer)
+	for err != nil {
+		log4go.Warn("error while writing reset bytes to usb device: %v", err.Error())
+		_, err = device.Write(resetBuffer)
+	}
+
+	buffer := make([]byte, 16)
+	// Read hard reset reply
+	_, err = device.Read(buffer)
+	for err != nil {
+		log4go.Warn("error while reading reset bytes reply from usb device: %v", err.Error())
+		goto SEND_RESET
+	}
+}
+
 func (device *AntUsbDevice) Read(buffer []byte) (int, error) {
 	epoint := device.inEndpoint
 	n, err := epoint.Read(buffer)
@@ -56,6 +83,7 @@ func (device *AntUsbDevice) Write(data []byte) (int, error) {
 		return 0, log4go.Error("error while writing to device: %s", err)
 	}
 
+	log4go.Debug("%v bytes written to usb device", n)
 	return n, nil
 }
 

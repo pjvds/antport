@@ -20,19 +20,17 @@ func newReceiver(device hardware.AntDevice) MessageReceiver {
 }
 
 func (receiver MessageReceiver) Receive() (msg *AntMessage, err error) {
-	log.Println("receiving message...")
-
 	buffer := make([]byte, 16)
 	n, err := receiver.Read(buffer)
 
-	for retries := 1; retries < receiver.maxRetry+1; retries++ {
-		if err != nil {
-			log.Printf("error while receiving message, %v bytes read: %s", n, err)
-			log.Printf("will retry (%v/%v)", retries, receiver.maxRetry)
+	// for retries := 1; retries < receiver.maxRetry+1; retries++ {
+	// 	if err != nil {
+	// 		log.Printf("error while receiving message, %v bytes read: %s", n, err)
+	// 		log.Printf("will retry (%v/%v)", retries, receiver.maxRetry)
 
-			n, err = receiver.Read(buffer)
-		}
-	}
+	// 		n, err = receiver.Read(buffer)
+	// 	}
+	// }
 
 	if err != nil {
 		log.Println("error reading from device: " + err.Error())
@@ -53,6 +51,6 @@ func (receiver MessageReceiver) Receive() (msg *AntMessage, err error) {
 		Length: length,
 	}
 
-	log.Println("message received correcly")
+	log.Println("message received correcly: %v", buffer[0:n])
 	return msg, nil
 }

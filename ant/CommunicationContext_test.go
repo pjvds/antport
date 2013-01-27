@@ -5,6 +5,26 @@ import (
 	"testing"
 )
 
+func TestMessageChat(t *testing.T) {
+	device, antContext := GetSingleChannelOrFail(t)
+	defer antContext.Close()
+	defer device.Close()
+
+	ctx := NewCommunicationContext(device)
+	defer ctx.Close()
+	ctx.Open()
+
+	ctx.Output <- RequestMessage(0, MESG_CAPABILITIES_ID)
+	response := <-ctx.Input
+
+	if response.Id != MESG_CAPABILITIES_ID {
+		t.Errorf("Didn't receive expected reply. Expected message id 0x%x, actual 0x%x", MESG_CAPABILITIES_ID, response.Id)
+		t.Errorf("Data is: %x", response.Data)
+	} else {
+		t.Log("Received correct reply in chat test")
+	}
+}
+
 func TestSendingHardReset(t *testing.T) {
 	device, antContext := GetSingleChannelOrFail(t)
 	defer antContext.Close()

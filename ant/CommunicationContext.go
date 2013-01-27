@@ -42,6 +42,7 @@ func (ctx *CommunicationContext) Open() {
 	ctx.communicating.Add(1)
 	defer ctx.communicating.Done()
 
+	ctx.device.Reset()
 	go ctx.readLoop()
 	go ctx.writeLoop()
 }
@@ -50,7 +51,7 @@ func (ctx *CommunicationContext) readLoop() {
 	ctx.communicating.Add(1)
 	defer ctx.communicating.Done()
 
-	log4go.Debug("write loop started")
+	log4go.Debug("read loop started")
 
 	for !ctx.clossing {
 		msg, err := ctx.receiver.Receive()
@@ -72,14 +73,17 @@ func (ctx *CommunicationContext) writeLoop() {
 	log4go.Debug("write loop started")
 
 	for !ctx.clossing {
-		msg, closed := <-ctx.Output
+		msg, ok := <-ctx.Output
 
-		if !closed {
+		if ok {
+			log4go.Debug("found new output in output channel")
 			err := ctx.sender.Send(msg)
 
 			if err != nil {
 				log4go.Warn("error while sending to device: %v", err.Error())
 			}
+		} else {
+			log4go.Warn("output channel closed")
 		}
 	}
 
@@ -88,10 +92,10 @@ func (ctx *CommunicationContext) writeLoop() {
 
 func (ctx *CommunicationContext) Close() {
 	ctx.clossing = true
-	ctx.communicating.Wait()
-
 	close(ctx.Input)
 	close(ctx.Output)
+
+	ctx.communicating.Wait()
 	ctx.device.Close()
 
 	ctx.device = nil
