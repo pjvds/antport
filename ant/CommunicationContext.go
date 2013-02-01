@@ -21,7 +21,9 @@ type CommunicationContext struct {
 	receiver MessageReceiver
 	sender   MessageSender
 
-	clossing      bool
+	isOpen     bool
+	isOpenLock sync.Mutex
+
 	communicating sync.WaitGroup
 
 	waitingTickets *list.List
@@ -48,13 +50,23 @@ func NewCommunicationContext(device hardware.AntDevice) CommunicationContext {
 }
 
 func (ctx *CommunicationContext) Open() {
-	ctx.communicating.Add(1)
-	defer ctx.communicating.Done()
+	log4go.Debug("opening communiction...")
 
-	ctx.device.Reset()
-	go ctx.readLoop()
-	go ctx.writeLoop()
-	go ctx.matchLoop()
+	ctx.isOpenLock.Lock()
+	defer ctx.isOpenLock.Unlock()
+
+	if !ctx.isOpen {
+		ctx.device.Reset()
+		ctx.isOpen = true
+
+		go ctx.readLoop()
+		go ctx.writeLoop()
+		go ctx.matchLoop()
+
+		log4go.Debug("communication opened")
+	} else {
+		log4go.Debug("communication already open, nothing changed")
+	}
 }
 
 func (ctx *CommunicationContext) readLoop() {
@@ -63,7 +75,7 @@ func (ctx *CommunicationContext) readLoop() {
 
 	log4go.Debug("read loop started")
 
-	for !ctx.clossing {
+	for ctx.isOpen {
 		msg, err := ctx.receiver.Receive()
 
 		if err != nil {
@@ -117,7 +129,7 @@ func (ctx *CommunicationContext) matchLoop() {
 
 	log4go.Debug("match loop started")
 
-	for !ctx.clossing {
+	for ctx.isOpen {
 		input := <-ctx.input
 		var found bool
 
@@ -160,7 +172,7 @@ func (ctx *CommunicationContext) writeLoop() {
 
 	log4go.Debug("write loop started")
 
-	for !ctx.clossing {
+	for ctx.isOpen {
 		tckt, ok := <-ctx.Output
 
 		if ok {
@@ -183,14 +195,25 @@ func (ctx *CommunicationContext) writeLoop() {
 }
 
 func (ctx *CommunicationContext) Close() {
-	ctx.clossing = true
-	close(ctx.input)
-	close(ctx.Output)
+	log4go.Debug("closing communication...")
 
-	ctx.communicating.Wait()
-	ctx.device.Close()
+	ctx.isOpenLock.Lock()
+	defer ctx.isOpenLock.Unlock()
 
-	ctx.device = nil
-	ctx.input = nil
-	ctx.Output = nil
+	if ctx.isOpen {
+		ctx.isOpen = false
+		close(ctx.input)
+		close(ctx.Output)
+
+		ctx.communicating.Wait()
+		ctx.device.Close()
+
+		ctx.device = nil
+		ctx.input = nil
+		ctx.Output = nil
+
+		log4go.Debug("communication closed")
+	} else {
+		log4go.Debug("communication already closed, nothing changed")
+	}
 }

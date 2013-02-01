@@ -37,11 +37,11 @@ func (receiver MessageReceiver) Receive() (msg *AntMessage, err error) {
 		return nil, err
 	}
 
-	data := make([]byte, 0)
 	length := buffer[1]
+	data := make([]byte, length)
 
-	if length > 0 {
-		data = buffer[3:length]
+	for i := byte(0); i < length; i++ {
+		data[i] = buffer[3+i]
 	}
 
 	msg = &AntMessage{
@@ -52,5 +52,6 @@ func (receiver MessageReceiver) Receive() (msg *AntMessage, err error) {
 	}
 
 	log.Println("message received correcly: %v", buffer[0:n])
+	log.Printf("%s", msg)
 	return msg, nil
 }
