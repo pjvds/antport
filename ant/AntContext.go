@@ -5,6 +5,8 @@ import (
 )
 
 type AntContext struct {
+	Channels []AntChannel
+
 	communication *CommunicationContext
 }
 
@@ -26,7 +28,12 @@ func (ctx *AntContext) Init() error {
 		return err
 	}
 
-	response.AsCapabilities()
+	caps := response.AsCapabilities()
+	ctx.Channels = make([]AntChannel, caps.MaxChannels)
+	for chanNumber := byte(0); chanNumber < caps.MaxChannels; chanNumber++ {
+		ctx.Channels[chanNumber] = NewAntChannel(chanNumber)
+	}
+
 	log4go.Debug("AntContext initilized succesfully")
 	return nil
 }

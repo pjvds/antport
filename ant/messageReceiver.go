@@ -52,6 +52,5 @@ func (receiver MessageReceiver) Receive() (msg *AntMessage, err error) {
 	}
 
 	log.Println("message received correcly: %v", buffer[0:n])
-	log.Printf("%s", msg)
 	return msg, nil
 }
